@@ -309,6 +309,8 @@ if GetLocale() == "zhTW" then
 	XPERL_CONF_PLAYER_BUFFSABOVE_DESC	= "顯示玩家增減益狀態於框架之上,取代原有下方顯示"
 	XPERL_CONF_PLAYER_BUFFSHIDEBLIZZ	= "隱藏內建Buff框架"
 	XPERL_CONF_PLAYER_BUFFSHIDEBLIZZ_DESC	= "隱藏原系統內建的 增減益狀態圖示 框架"
+	XPERL_CONF_PLAYER_HIGHLIGHTOWNBUFFS	= "突顯自己的Buff"
+	XPERL_CONF_PLAYER_HIGHLIGHTOWNBUFFS_DESC	= "以較大尺寸顯示您自己施放的增益狀態，類似於敵人身上您的減益狀態被突顯顯示的效果。"
 	XPERL_CONF_PLAYER_BUFFSIZE		= "Buffs尺寸"
 	XPERL_CONF_PLAYER_BUFFSIZE_DESC		= "調整玩家增益狀態圖標顯示尺寸"
 	XPERL_CONF_PLAYER_DEBUFFSIZE		= "Debuffs尺寸"

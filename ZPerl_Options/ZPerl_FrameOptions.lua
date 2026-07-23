@@ -213,7 +213,7 @@ function XPerl_Options_CheckButton_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		if (title) then
 			GameTooltip:SetText(title, 1, 1, 1)
-			GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true)
+			GameTooltip:AddLine(self.tooltipText, nil, nil, nil, 1)
 		else
 			GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true)
 		end
@@ -1866,6 +1866,7 @@ function XPerl_Options_ImportOldConfig(old)
 				above		= Convert(old.PlayerBuffsAbove),
 				size		= old.PlayerBuffSize		or 15,
 				hideBlizzard	= Convert(old.HideBlizzardBuffBar),
+				highlightOwnBuffs	= nil,			-- Default off
 				count		= old.PlayerBuffMaxDisplay	or 40,
 				cooldown	= Convert(old.PlayerBuffsCooldown),
 				flash		= Convert(old.PlayerBuffsFlash),

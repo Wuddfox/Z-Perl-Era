@@ -25,10 +25,12 @@ local tostring = tostring
 local Ambiguate = Ambiguate
 local GetLocale = GetLocale
 local GetTime = GetTime
+local IsAddOnLoaded = IsAddOnLoaded
 local IsAltKeyDown = IsAltKeyDown
 local IsInInstance = IsInInstance
 local IsInRaid = IsInRaid
 local IsShiftKeyDown = IsShiftKeyDown
+local SendAddonMessage = SendAddonMessage
 local UnitFactionGroup = UnitFactionGroup
 local UnitInParty = UnitInParty
 local UnitIsConnected = UnitIsConnected
@@ -112,7 +114,7 @@ function mod:TooltipInfo(tooltip, unitid)
 				xp = xp.."\n|cFFFFFFFF"..format(XPERL_USAGE_MEMMAX, xpUsage.gc).."|r"
 			end
 
-			GameTooltip:AddLine(xp, 1, 1, 1, true)
+			GameTooltip:AddLine(xp, 1, 1, 1, 1)
 			GameTooltip:Show()
 		end
 	end
@@ -177,7 +179,7 @@ function mod:ProcessXPerlMessage(sender, msg, channel)
 	elseif (msg == "S") then
 		if (channel == "WHISPER") then
 			-- Version only sent, so ask for rest
-			C_ChatInfo.SendAddonMessage("X-Perl", "ASK", channel, sender)
+			SendAddonMessage("X-Perl", "ASK", channel, sender)
 		end
 	elseif (msg == "ASK") then
 		if (channel == "WHISPER") then
@@ -289,7 +291,7 @@ function mod:SendModules(chan, target)
 		end
 
 		local packet = self:MakePacket(chan == "WHISPER")
-		C_ChatInfo.SendAddonMessage("X-Perl", packet, chan, target)
+		SendAddonMessage("X-Perl", packet, chan, target)
 	end
 end
 
@@ -358,7 +360,7 @@ function XPerl_GetUsage(unitName, unitID)
 			end
 			if (not mod.directQueries[unitName]) then
 				mod.directQueries[unitName] = true
-				C_ChatInfo.SendAddonMessage("X-Perl", mod:MakePacket(nil, true), "WHISPER", unitName)
+				SendAddonMessage("X-Perl", mod:MakePacket(nil, true), "WHISPER", unitName)
 			end
 		end
 	end

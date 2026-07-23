@@ -39,7 +39,6 @@ end
 
 local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local IsPandaClassic = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
-local IsBCClassic = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
 
@@ -321,6 +320,20 @@ function XPerl_Raid_OnLoad(self)
 			SkipHighlightUpdate = nil
 		end
 	end, "Raid")
+
+	-- XPerl_OptionActions (and ZPerl_Party's PLAYER_ENTERING_WORLD) unconditionally
+	-- strip UIParent's GROUP_ROSTER_UPDATE listener to prevent Blizzard UIParent_OnEvent
+	-- lag. When the user has NOT chosen to disable the default raid frames, we must
+	-- restore that registration after every XPerl_OptionActions call so that
+	-- CompactRaidFrameManager can show and populate Blizzard raid frames normally.
+	-- Using hooksecurefunc guarantees this runs dead-last, after all option changers
+	-- and after ZPerl_Party's own handlers have finished stripping the event.
+	hooksecurefunc("XPerl_OptionActions", function()
+		if not rconf or rconf.disableDefault then
+			return
+		end
+		UIParent:RegisterEvent("GROUP_ROSTER_UPDATE")
+	end)
 
 	XPerl_Raid_OnLoad = nil
 end
@@ -1391,6 +1404,32 @@ end
 -- COMPACT_UNIT_FRAME_PROFILES_LOADED
 function XPerl_Raid_Events:COMPACT_UNIT_FRAME_PROFILES_LOADED()
 	if not rconf.disableDefault then
+		-- Restore auto-activation profile options that DisableCompactRaidFrames() may
+		-- have previously written to the Blizzard saved profile (either from a prior
+		-- session with disableDefault enabled, or from the old unconditional ZPerl_Party
+		-- suppression). Without this, the manager's persisted "IsShown=false" and the
+		-- zeroed-out autoActivate flags prevent Blizzard raid frames from ever showing
+		-- even though ZPerl is no longer suppressing them.
+		if CompactUnitFrameProfiles and CompactUnitFrameProfiles.selectedProfile then
+			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate2Players", true)
+			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate5Players", true)
+			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate10Players", true)
+			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate15Players", true)
+			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate40Players", true)
+			if IsClassic then
+				SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate20Players", true)
+			else
+				SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate25Players", true)
+				SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivateSpec1", true)
+				SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivateSpec2", true)
+			end
+			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivatePvP", true)
+			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivatePvE", true)
+			CompactUnitFrameProfiles_SaveChanges(CompactUnitFrameProfiles)
+		end
+		if not InCombatLockdown() and CompactRaidFrameManager then
+			CompactRaidFrameManager_SetSetting("IsShown", true)
+		end
 		return
 	end
 	if IsClassic then
@@ -2494,7 +2533,7 @@ function XPerl_RaidTipExtra(unitid)
 
 				local Rezzers = GetCombatRezzerList()
 				if (Rezzers) then
-					GameTooltip:AddLine(XPERL_RAID_RESSER_AVAIL..Rezzers, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
+					GameTooltip:AddLine(XPERL_RAID_RESSER_AVAIL..Rezzers, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
 				end
 			end
 		end
@@ -2636,8 +2675,13 @@ function XPerl_Raid_ChangeAttributes()
 
 	rconf.anchor = (rconf and rconf.anchor) or "TOP"
 
-	for i = 1, rconf.sortByClass and CLASS_COUNT or (IsVanillaClassic and 9 or (IsBCClassic and 9) or (IsPandaClassic and 11 or 13)) do
+	for i = 1, rconf.sortByClass and CLASS_COUNT or (IsVanillaClassic and 9 or (IsPandaClassic and 11 or 13)) do
 		local groupHeader = raidHeaders[i]
+
+		-- Guard against nil raidHeaders entry
+		if not groupHeader then
+			break
+		end
 
 		-- Hide this when we change attributes, so the whole re-calc is only done once, instead of for every attribute change
 		groupHeader:Hide()

@@ -21,25 +21,13 @@ local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
 local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
-local DebuffColors = {}
-DebuffColors.none = _G.DEBUFF_TYPE_NONE_COLOR or { r = 0.8, g = 0, b = 0 }
-DebuffColors.Magic = _G.DEBUFF_TYPE_MAGIC_COLOR or { r = 0.2, g = 0.6, b = 1 }
-DebuffColors.Curse = _G.DEBUFF_TYPE_CURSE_COLOR or { r = 0.6, g = 0, b = 1 }
-DebuffColors.Disease = _G.DEBUFF_TYPE_DISEASE_COLOR or { r = 0.6, g = 0.4, b = 0 }
-DebuffColors.Poison = _G.DEBUFF_TYPE_POISON_COLOR or { r = 0, g = 0.6, b = 0 }
-
-local floor = floor
-local max = max
-
-local CreateFrame = CreateFrame
-local DebuffTypeColor = DebuffTypeColor or DebuffColors
-local GetShapeshiftForm = GetShapeshiftForm
-local GetSpecialization = GetSpecialization
-local GetTime = GetTime
-local InCombatLockdown = InCombatLockdown
-local UnitAura = UnitAura
-local UnitClass = UnitClass
-local UnitPowerType = UnitPowerType
+local DebuffTypeColor = DebuffTypeColor or {
+	none    = { r = 0.80, g = 0.00, b = 0.00 },
+	Magic   = { r = 0.20, g = 0.60, b = 1.00 },
+	Curse   = { r = 0.60, g = 0.00, b = 1.00 },
+	Disease = { r = 0.60, g = 0.40, b = 0.00 },
+	Poison  = { r = 0.00, g = 0.60, b = 0.00 },
+}
 
 -- setCommon
 local function setCommon(self, filter, buffTemplate)
@@ -49,9 +37,11 @@ local function setCommon(self, filter, buffTemplate)
 
 	self:SetAttribute("filter", filter)
 	self:SetAttribute("separateOwn", 1)
+	
 	if (filter == "HELPFUL") then
 		self:SetAttribute("includeWeapons", 1)
 	end
+	
 	self:SetAttribute("point", pconf.buffs.above and "BOTTOMLEFT" or "TOPLEFT")
 	if (pconf.buffs.wrap) then
 		self:SetAttribute("wrapAfter", max(1, floor(XPerl_Player:GetWidth() / pconf.buffs.size)))	-- / XPerl_Player:GetEffectiveScale()
@@ -59,7 +49,7 @@ local function setCommon(self, filter, buffTemplate)
 		self:SetAttribute("wrapAfter", 0)
 	end
 	self:SetAttribute("maxWraps", pconf.buffs.rows)
-	self:SetAttribute("xOffset", 32)	-- pconf.buffs.size)
+	self:SetAttribute("xOffset", 32)
 	self:SetAttribute("yOffset", 0)
 	self:SetAttribute("wrapXOffset", 0)
 	self:SetAttribute("wrapYOffset", pconf.buffs.above and 32 or -32)
@@ -150,21 +140,12 @@ function XPerl_Player_BuffSetup(self)
 		self.buffFrame = CreateFrame("Frame", self:GetName().."buffFrame", self, "SecureAuraHeaderTemplate")
 		self.debuffFrame = CreateFrame("Frame", self:GetName().."debuffFrame", self.buffFrame, "SecureAuraHeaderTemplate")
 
-
 		self.buffFrame:SetAttribute("frameStrata", "DIALOG")
 
 		self.buffFrame.BuffFrameUpdateTime = 0
 		self.buffFrame.BuffFrameFlashTime = 0
 		self.buffFrame.BuffFrameFlashState = 1
 		self.buffFrame.BuffAlphaValue = 1
-		--self.buffFrame:SetScript("OnUpdate", BuffFrame_OnUpdate)
-
-		-- Not implemented.. yet.. maybe later
-		--self.buffFrame.initialConfigFunction = function(self)
-		--	d("initialConfigFunction(%s)", tostring(self))
-		--	self:SetAttribute("useparent-unit", true)
-		--end
-		--self.debuffFrame.initialConfigFunction = self.buffFrame.initialConfigFunction
 	end
 
 	if (self.buffFrame) then
@@ -197,14 +178,20 @@ function XPerl_Player_BuffSetup(self)
 	if (pconf.buffs.hideBlizzard) then
 		BuffFrame:UnregisterEvent("UNIT_AURA")
 		BuffFrame:Hide()
-		if not IsRetail and TemporaryEnchantFrame then
-			TemporaryEnchantFrame:Hide()
+		-- Use the secure attribute driver to keep BuffFrame hidden even during combat,
+		-- preventing game updates (e.g. PLAYER_REGEN_DISABLED) from re-showing it.
+		RegisterAttributeDriver(BuffFrame, "state-visibility", "hide")
+		if not IsRetail and _G.TemporaryEnchantFrame then
+			_G.TemporaryEnchantFrame:Hide()
+			RegisterAttributeDriver(_G.TemporaryEnchantFrame, "state-visibility", "hide")
 		end
 	else
+		UnregisterAttributeDriver(BuffFrame, "state-visibility")
 		BuffFrame:Show()
 		BuffFrame:RegisterEvent("UNIT_AURA")
-		if not IsRetail and TemporaryEnchantFrame then
-			TemporaryEnchantFrame:Show()
+		if not IsRetail and _G.TemporaryEnchantFrame then
+			UnregisterAttributeDriver(_G.TemporaryEnchantFrame, "state-visibility")
+			_G.TemporaryEnchantFrame:Show()
 		end
 	end
 end

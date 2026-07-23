@@ -22,7 +22,7 @@ function ZPerl:ADDON_LOADED(addon)
 	self:RegisterEvents()
 
 	self.playerName = string.gsub(UnitName("player").."-"..GetRealmName(), "%s+", "")
-	self.version = C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata("ZPerl", "Version") or "7.7.2"
+	self.version = C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata("ZPerl", "Version") or "7.6.2"
 
 	self:UnregisterEvent("ADDON_LOADED")
 end
@@ -70,7 +70,6 @@ end
 function ZPerl:RegisterEvents()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("GROUP_ROSTER_UPDATE")
-	self:RegisterEvent("CHAT_MSG_ADDON")
 end
 
 function ZPerl:CompareVersion(version)

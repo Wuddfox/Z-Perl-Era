@@ -293,6 +293,8 @@ if GetLocale() == "itIT" then
 	XPERL_CONF_PLAYER_BUFFSABOVE_DESC        = "Visualizza i benefici del giocatore sopra alla finestra al posto che sotto"
 	XPERL_CONF_PLAYER_BUFFSHIDEBLIZZ        = "Nascondi Benefici Blizzard"
 	XPERL_CONF_PLAYER_BUFFSHIDEBLIZZ_DESC    = "Nasconde l'interfaccia benefici standard"
+	XPERL_CONF_PLAYER_HIGHLIGHTOWNBUFFS        = "Evidenzia Propri Benefici"
+	XPERL_CONF_PLAYER_HIGHLIGHTOWNBUFFS_DESC    = "Mostra i tuoi benefici auto-lanciati in dimensione più grande, simile a come i tuoi debuff sui nemici sono evidenziati."
 	XPERL_CONF_PLAYER_BUFFSIZE                = "Dimensione Benefici"
 	XPERL_CONF_PLAYER_BUFFSIZE_DESC            = "Modifica la dimensione delle icon dei benefici del giocatore"
 	XPERL_CONF_PLAYER_DEBUFFSIZE            = "Dimensione Penalità"

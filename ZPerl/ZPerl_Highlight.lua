@@ -19,6 +19,7 @@ local _G = _G
 local bit = bit
 local cos = cos
 local format = format
+local math = math
 local min = min
 local next = next
 local pairs = pairs
@@ -93,7 +94,7 @@ local function GetTalentValueByName(name)
 	local group = GetActiveSpecGroup()
 	local tab, index = GetTalentPosition(name)
 	if (index) then
-		local name, iconPath, tier, column, currentRank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, index, GetActiveSpecGroup(), nil, group)
+		local name, iconPath, tier, column, currentRank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, index, nil, nil, group)
 		return currentRank
 	end
 	return 0

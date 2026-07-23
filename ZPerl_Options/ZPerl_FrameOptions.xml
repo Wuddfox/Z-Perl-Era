@@ -187,7 +187,7 @@
 					local title = self:GetText()
 					if (title) then
 						GameTooltip:SetText(title, 1, 1, 1)
-						GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true)
+						GameTooltip:AddLine(self.tooltipText, nil, nil, nil, 1)
 						GameTooltip:Show()
 					else
 						GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true)
@@ -344,7 +344,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 						if (title) then
 							GameTooltip:SetText(title, 1, 1, 1)
-							GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true)
+							GameTooltip:AddLine(self.tooltipText, nil, nil, nil, 1)
 						else
 							GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true)
 						end
@@ -394,7 +394,7 @@
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 					if (title) then
 						GameTooltip:SetText(title, 1, 1, 1)
-						GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true)
+						GameTooltip:AddLine(self.tooltipText, nil, nil, nil, 1)
 					else
 						GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true)
 					end
@@ -744,7 +744,7 @@
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 					if (title) then
 						GameTooltip:SetText(title, 1, 1, 1)
-						GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true)
+						GameTooltip:AddLine(self.tooltipText, nil, nil, nil, 1)
 					else
 						GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true)
 					end
@@ -1238,11 +1238,13 @@
 						XPerl_Options_RegisterProtected(self)
 					</OnLoad>
 					<OnShow>
-						local class = XPerlDB.raid.class[self:GetID()].name
+						local classEntry = XPerlDB.raid.class[self:GetID()]
+						if not classEntry then return end
+						local class = classEntry.name
 						local textFrame = _G[self:GetName().."Text"]
 						textFrame:SetText(LOCALIZED_CLASS_NAMES_MALE[class])
 						self:SetHitRectInsets(0, -(textFrame:GetStringWidth()), 0, 0)
-						self:SetChecked(XPerlDB.raid.class[self:GetID()].enable)
+						self:SetChecked(classEntry.enable)
 					</OnShow>
 					<OnClick>
 						if self:GetChecked() then
@@ -1271,7 +1273,7 @@
 					<OnLoad>
 						self:SetID(self:GetParent():GetID())
 						self.tooltipText = XPERL_CONF_RAID_CLASS_DOWN
-						if (self:GetID() == (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and 9 or (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC and 9) or (WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC and 11 or 13))) then
+						if (self:GetID() == (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and 9 or (WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC and 11 or 13))) then
 							self:Hide()
 						end
 					</OnLoad>
@@ -3841,7 +3843,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+								if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 									self:Hide()
 									return
 								end
@@ -6089,8 +6091,35 @@
 											if (XPerl_Player_BuffSetup) then
 												XPerl_Player_BuffSetup(XPerl_Player)
 											end
-											if WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC then
+											if WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC and type(BuffFrame_Update) == "function" then
 												BuffFrame_Update()
+											end
+										end
+										XPerl_Options_RegisterProtected(self)
+									</OnLoad>
+								</Scripts>
+							</CheckButton>
+
+							<CheckButton name="$parent_HighlightOwnBuffs" inherits="XPerlCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="30" y="30"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent_HideBlizzardBuffBar" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										XPerl_OptionsSetMyText(self, "XPERL_CONF_PLAYER_HIGHLIGHTOWNBUFFS")
+										self.flashFrame = XPerl_PlayerbuffFrame
+										self.configBase = "XPerlDB.player.buffs"
+										self.configIndex = "highlightOwnBuffs"
+										self.configClick = function()
+											if (XPerl_Player_Buffs_Set_Bits) then
+												XPerl_Player_Buffs_Set_Bits(XPerl_Player)
 											end
 										end
 										XPerl_Options_RegisterProtected(self)
@@ -13121,7 +13150,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 											self:Hide()
 											return
 										end
@@ -13148,7 +13177,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 											self:Hide()
 											return
 										end
@@ -13175,7 +13204,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
 											self:Hide()
 											return
 										end
@@ -13202,7 +13231,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
 											self:Hide()
 											return
 										end
@@ -13333,7 +13362,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 											self:Hide()
 										end
 									</OnLoad>
@@ -13349,7 +13378,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
 											self:Hide()
 										end
 									</OnLoad>
@@ -13366,7 +13395,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
 											self:Hide()
 										end
 									</OnLoad>
@@ -13383,7 +13412,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
+										if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC or WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
 											self:Hide()
 										end
 									</OnLoad>

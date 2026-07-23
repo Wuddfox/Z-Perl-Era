@@ -281,6 +281,8 @@ if GetLocale() == "koKR" then
 	XPERL_CONF_PLAYER_BUFFSABOVE_DESC	= "프레임의 위에 플레이어 버프 표시"
 	XPERL_CONF_PLAYER_BUFFSHIDEBLIZZ	= "기본 버프 숨김"
 	XPERL_CONF_PLAYER_BUFFSHIDEBLIZZ_DESC	= "기본 UI 버프창을 숨깁니다."
+	XPERL_CONF_PLAYER_HIGHLIGHTOWNBUFFS	= "자신의 버프 강조"
+	XPERL_CONF_PLAYER_HIGHLIGHTOWNBUFFS_DESC	= "적에게 걸린 자신의 디버프가 강조되는 것과 유사하게 자신이 시전한 버프를 더 큰 크기로 표시합니다."
 	XPERL_CONF_PLAYER_BUFFSIZE		= "버프 크기"
 	XPERL_CONF_PLAYER_BUFFSIZE_DESC		= "플레이어 버프 아이콘의 크기를 조절합니다."
 	XPERL_CONF_PLAYER_DEBUFFSIZE		= "디버프 크기"

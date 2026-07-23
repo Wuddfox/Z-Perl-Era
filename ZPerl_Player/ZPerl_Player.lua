@@ -731,6 +731,9 @@ function XPerl_Player_DruidBarUpdate(self)
 		self.statsFrame:SetHeight(h)
 	end]]
 
+	local h = 40 + ((((druidBar and druidBar:IsShown()) and 1 or 0) + (pconf.repBar and 1 or 0) + (pconf.xpBar and 1 or 0)) * 10)
+	self.statsFrame:SetHeight(h)
+
 	XPerl_StatsFrameSetup(self, {druidBar, self.statsFrame.xpBar, self.statsFrame.repBar})
 	--[[if (XPerl_Player_Buffs_Position) then
 		XPerl_Player_Buffs_Position(self)
@@ -2055,21 +2058,20 @@ end
 
 -- XPerl_Player_SetTotems
 function XPerl_Player_SetTotems()
-	if not TotemFrame then
-		return
-	end
-
-	if pconf.totems and pconf.totems.enable then
-		TotemFrame:SetParent(XPerl_Player)
-		TotemFrame:ClearAllPoints()
-		TotemFrame:SetPoint("TOP", XPerl_Player, "BOTTOM", pconf.totems.offsetX, pconf.totems.offsetY)
-	else
-		TotemFrame:SetParent(PlayerFrame)
-		TotemFrame:ClearAllPoints()
-		if IsRetail then
-			TotemFrame:SetPoint("TOPRIGHT", PlayerFrame, "BOTTOMRIGHT", 0, 20)
+	local tf = _G and _G.TotemFrame or nil
+	if (type(tf) == "table" or type(tf) == "userdata") then
+		if (pconf.totems and pconf.totems.enable) then
+			if tf.SetParent then tf:SetParent(XPerl_Player) end
+			if tf.ClearAllPoints then tf:ClearAllPoints() end
+			if tf.SetPoint then tf:SetPoint("TOP", XPerl_Player, "BOTTOM", pconf.totems.offsetX, pconf.totems.offsetY) end
 		else
-			TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "BOTTOMLEFT", 99, 38)
+			if tf.SetParent then tf:SetParent(PlayerFrame) end
+			if tf.ClearAllPoints then tf:ClearAllPoints() end
+			if IsRetail then
+				if tf.SetPoint then tf:SetPoint("TOPRIGHT", PlayerFrame, "BOTTOMRIGHT", 0, 20) end
+			else
+				if tf.SetPoint then tf:SetPoint("TOPLEFT", PlayerFrame, "BOTTOMLEFT", 99, 38) end
+			end
 		end
 	end
 end
@@ -2223,10 +2225,11 @@ function XPerl_Player_Set_Bits(self)
 			}
 		end
 
-		if not IsVanillaClassic and TotemFrame then
+		if not IsVanillaClassic then
 			if (pconf.totems and pconf.totems.enable and not self.totemHooked) then
 				local moving
-				hooksecurefunc(TotemFrame, "SetPoint", function(self)
+				if TotemFrame then
+					hooksecurefunc(TotemFrame, "SetPoint", function(self)
 					if not pconf.totems.enable then
 						return
 					end
@@ -2239,9 +2242,11 @@ function XPerl_Player_Set_Bits(self)
 					self:SetPoint("TOP", XPerl_Player, "BOTTOM", pconf.totems.offsetX, pconf.totems.offsetY)
 					self:SetMovable(false)
 					moving = nil
-				end)
+					end)
+				end
 				local parenting
-				hooksecurefunc(TotemFrame, "SetParent", function(self)
+				if TotemFrame then
+					hooksecurefunc(TotemFrame, "SetParent", function(self)
 					if not pconf.totems.enable then
 						return
 					end
@@ -2255,7 +2260,8 @@ function XPerl_Player_Set_Bits(self)
 					self:SetPoint("TOP", XPerl_Player, "BOTTOM", pconf.totems.offsetX, pconf.totems.offsetY)
 					self:SetMovable(false)
 					parenting = nil
-				end)
+					end)
+				end
 				self.totemHooked = true
 				XPerl_Player_SetTotems()
 			else

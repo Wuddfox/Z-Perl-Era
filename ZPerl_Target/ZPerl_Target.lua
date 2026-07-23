@@ -212,11 +212,11 @@ function XPerl_Target_OnLoad(self, partyid)
 			if parenting then
 				return
 			end
-			parenting = true
-			self:SetMovable(true)
-			self:SetParent(XPerl_Target)
-			self:SetMovable(false)
-			parenting = nil
+			if not InCombatLockdown() then
+				parenting = true
+				self:SetParent(XPerl_Target)
+				parenting = nil
+			end
 		end)
 
 		ComboFrame:SetParent(XPerl_Target)
@@ -244,10 +244,19 @@ function XPerl_Target_OnLoad(self, partyid)
 		self.buffSetup = buffSetup
 	else
 		self.buffSetup = {
+			rightClickable = true,
 			buffScripts = {
 				OnEnter = XPerl_Unit_SetBuffTooltip,
 				OnUpdate = BuffOnUpdate,
 				OnLeave = XPerl_PlayerTipHide,
+				OnClick = not IsClassic and function(self, button)
+					if button == "RightButton" then
+						local unitFrame = self:GetParent():GetParent()
+						if unitFrame and unitFrame.partyid and UnitIsUnit(unitFrame.partyid, "player") then
+							CancelUnitBuff("player", self:GetID(), self.filter)
+						end
+					end
+				end or nil,
 			},
 			debuffScripts = {
 				OnEnter = XPerl_Unit_SetDeBuffTooltip,

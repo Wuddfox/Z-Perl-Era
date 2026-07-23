@@ -291,6 +291,8 @@ if GetLocale() == "ruRU" then
 	XPERL_CONF_PLAYER_BUFFSABOVE_DESC				= "Отображение бафов над фреймом игрока"
 	XPERL_CONF_PLAYER_BUFFSHIDEBLIZZ				= "Скрыть стандартные бафы"
 	XPERL_CONF_PLAYER_BUFFSHIDEBLIZZ_DESC			= "Скрывает отображение фрейма стандартных бафов"
+	XPERL_CONF_PLAYER_HIGHLIGHTOWNBUFFS				= "Выделить свои бафы"
+	XPERL_CONF_PLAYER_HIGHLIGHTOWNBUFFS_DESC			= "Отображает ваши собственные бафы в большем размере, аналогично тому, как выделяются ваши дебафы на врагах."
 	XPERL_CONF_PLAYER_BUFFSIZE						= "Размер бафов"
 	XPERL_CONF_PLAYER_BUFFSIZE_DESC					= "Регулировать размер иконок бафов игрока"
 	XPERL_CONF_PLAYER_DEBUFFSIZE					= "Размер дебафов"

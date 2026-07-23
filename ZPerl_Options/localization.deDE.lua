@@ -287,6 +287,8 @@ if GetLocale() == "deDE" then
 	XPERL_CONF_PLAYER_BUFFSABOVE_DESC		= "Zeige die Buffs des Spielers \195\188ber dem Fenster anstatt darunter"
 	XPERL_CONF_PLAYER_BUFFSHIDEBLIZZ		= "Standard Buffs verstecken"
 	XPERL_CONF_PLAYER_BUFFSHIDEBLIZZ_DESC	= "Verstecke die Standard UI Buff Fenster"
+	XPERL_CONF_PLAYER_HIGHLIGHTOWNBUFFS		= "Eigene Buffs hervorheben"
+	XPERL_CONF_PLAYER_HIGHLIGHTOWNBUFFS_DESC	= "Zeige deine selbst gewirkten Buffs in größerer Größe an, ähnlich wie deine Debuffs auf Gegnern hervorgehoben werden."
 	XPERL_CONF_PLAYER_BUFFSIZE				= "Buff Gr\195\182\195\159e"
 	XPERL_CONF_PLAYER_BUFFSIZE_DESC			= "Die Gr\195\182\195\159e der Spieler Buffsymbole anpassen"
 	XPERL_CONF_PLAYER_DEBUFFSIZE			= "Debuff Gr\195\182\195\159e"

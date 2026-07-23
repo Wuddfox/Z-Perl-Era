@@ -8,12 +8,11 @@ local perc1F = "%.1f"..PERCENT_SYMBOL
 
 XPerl_RequestConfig(function(New)
 	conf = New
-end, "$Revision: $")
-XPerl_SetModuleRevision("$Revision: $")
+end, "$Revision: 9c0697ce7ea46b29e24c894c5db60c3d931f5bdd $")
+XPerl_SetModuleRevision("$Revision: 9c0697ce7ea46b29e24c894c5db60c3d931f5bdd $")
 
 local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local IsPandaClassic = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
-local IsBCClassic = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
 
@@ -36,14 +35,17 @@ local error = error
 local floor = floor
 local format = format
 local hooksecurefunc = hooksecurefunc
+local ipairs = ipairs
 local max = max
 local min = min
 local next = next
 local pairs = pairs
+local pcall = pcall
 local print = print
 local select = select
 local setmetatable = setmetatable
 local sin = sin
+local string = string
 local strmatch = strmatch
 local strsub = strsub
 local strupper = strupper
@@ -53,20 +55,21 @@ local tremove = tremove
 local type = type
 local unpack = unpack
 
-local DebuffColors = {}
-DebuffColors.none = _G.DEBUFF_TYPE_NONE_COLOR or { r = 0.8, g = 0, b = 0 }
-DebuffColors.Magic = _G.DEBUFF_TYPE_MAGIC_COLOR or { r = 0.2, g = 0.6, b = 1 }
-DebuffColors.Curse = _G.DEBUFF_TYPE_CURSE_COLOR or { r = 0.6, g = 0, b = 1 }
-DebuffColors.Disease = _G.DEBUFF_TYPE_DISEASE_COLOR or { r = 0.6, g = 0.4, b = 0 }
-DebuffColors.Poison = _G.DEBUFF_TYPE_POISON_COLOR or { r = 0, g = 0.6, b = 0 }
-
 local CheckInteractDistance = CheckInteractDistance
 local CreateFrame = CreateFrame
-local DebuffTypeColor = DebuffTypeColor or DebuffColors
+local DebuffTypeColor = DebuffTypeColor or {
+	none    = { r = 0.80, g = 0.00, b = 0.00 },
+	Magic   = { r = 0.20, g = 0.60, b = 1.00 },
+	Curse   = { r = 0.60, g = 0.00, b = 1.00 },
+	Disease = { r = 0.60, g = 0.40, b = 0.00 },
+	Poison  = { r = 0.00, g = 0.60, b = 0.00 },
+}
 local GetAddOnCPUUsage = GetAddOnCPUUsage
 local GetAddOnMemoryUsage = GetAddOnMemoryUsage
 local GetCursorPosition = GetCursorPosition
 local GetDifficultyColor = GetDifficultyColor or GetQuestDifficultyColor
+local GetItemCount = GetItemCount
+local GetItemInfo = GetItemInfo
 local GetLocale = GetLocale
 local GetNumGroupMembers = GetNumGroupMembers
 local GetNumSubgroupMembers = GetNumSubgroupMembers
@@ -79,9 +82,11 @@ local GetSpecialization = GetSpecialization
 local GetSpellInfo = GetSpellInfo
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
+local IsAddOnLoaded = IsAddOnLoaded
 local IsAltKeyDown = IsAltKeyDown
 local IsControlKeyDown = IsControlKeyDown
 local IsInRaid = IsInRaid
+local IsItemInRange = IsItemInRange
 local IsShiftKeyDown = IsShiftKeyDown
 local IsSpellInRange = IsSpellInRange
 local SecureButton_GetUnit = SecureButton_GetUnit
@@ -92,6 +97,7 @@ local SetRaidTargetIconTexture = SetRaidTargetIconTexture
 local SpellCanTargetUnit = SpellCanTargetUnit
 local SpellIsTargeting = SpellIsTargeting
 local UnitAffectingCombat = UnitAffectingCombat
+local UnitAlternatePowerInfo = UnitAlternatePowerInfo
 local UnitAura = UnitAura
 local UnitCanAssist = UnitCanAssist
 local UnitCanAttack = UnitCanAttack
@@ -107,6 +113,7 @@ local UnitHealthMax = UnitHealthMax
 local UnitInParty = UnitInParty
 local UnitInRaid = UnitInRaid
 local UnitInRange = UnitInRange
+local UnitInVehicle = UnitInVehicle
 local UnitIsAFK = UnitIsAFK
 local UnitIsConnected = UnitIsConnected
 local UnitIsDead = UnitIsDead
@@ -117,10 +124,14 @@ local UnitIsGhost = UnitIsGhost
 local UnitIsPlayer = UnitIsPlayer
 local UnitIsPVP = UnitIsPVP
 local UnitIsTapDenied = UnitIsTapDenied
+local UnitIsUnit = UnitIsUnit
 local UnitIsVisible = UnitIsVisible
 local UnitLevel = UnitLevel
 local UnitName = UnitName
 local UnitPlayerControlled = UnitPlayerControlled
+local UnitPopup_ShowMenu = UnitPopup_ShowMenu
+local UnitPopupMenus = UnitPopupMenus
+local UnitPopupShown = UnitPopupShown
 local UnitPowerMax = UnitPowerMax
 local UnitPowerType = UnitPowerType
 local UnitReaction = UnitReaction
@@ -778,7 +789,7 @@ function XPerl_BlizzFrameDisable(self)
 		end
 	end
 
-	if (IsRetail or IsBCClassic) and self == PartyFrame then
+	if IsRetail and self == PartyFrame then
 		for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
 			XPerl_BlizzFrameDisable(frame)
 		end
@@ -1477,7 +1488,8 @@ end
 
 -- XPerl_MinimapButton_Details
 function XPerl_MinimapButton_Details(tt, ldb)
-	tt:SetText(XPerl_Version.." "..XPerl_GetRevision(), 1, 1, 1)
+	-- Show a custom header for the minimap tooltip per user request
+	tt:SetText("Era fork of Resike's Z-Perl Unitframes", 1, 1, 1)
 	tt:AddLine(XPERL_MINIMAP_HELP1)
 	if (not ldb) then
 		tt:AddLine(XPERL_MINIMAP_HELP2)
@@ -2034,18 +2046,18 @@ function XPerl_CheckDebuffs(self, unit, resetBorders)
 		show = getShow(Curses)
 	end
 
-	local color, borderColour
+	local colour, borderColour
 	if show then
-		color = DebuffTypeColor[show]
-		color.a = 1
+		colour = DebuffTypeColor[show]
+		colour.a = 1
 
 		if conf.highlightDebuffs.border then
-			borderColour = color
+			borderColour = colour
 		else
 			borderColour = conf.colour.border
 		end
 	else
-		color = conf.colour.frame
+		colour = conf.colour.frame
 		borderColour = conf.colour.border
 	end
 
@@ -2068,10 +2080,10 @@ function XPerl_CheckDebuffs(self, unit, resetBorders)
 	for i = 1, #self.FlashFrames do
 		local f = self.FlashFrames[i]
 		if not conf.highlightDebuffs.frame then
-			color = conf.colour.frame
+			colour = conf.colour.frame
 		end
 		f:SetBackdrop(bgDef)
-		f:SetBackdropColor(color.r, color.g, color.b, color.a)
+		f:SetBackdropColor(colour.r, colour.g, colour.b, colour.a)
 		f:SetBackdropBorderColor(borderColour.r, borderColour.g, borderColour.b, borderColour.a)
 	end
 end

@@ -19,9 +19,8 @@ local percD = "%d"..PERCENT_SYMBOL
 
 local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local IsPandaClassic = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
-local IsBCClassic = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
-local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
+local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
 local ceil = ceil
 local floor = floor
@@ -138,13 +137,48 @@ function XPerl_Party_Events_OnLoad(self)
 
 	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE") -- IMPORTANT! Stops raid framerate lagging when members join/leave/zone
 
-	if IsRetail or IsBCClassic then
-		XPerl_BlizzFrameDisable(PartyFrame)
-	else
-		for i = 1, 4 do
-			XPerl_BlizzFrameDisable(_G["PartyMemberFrame"..i])
+	-- Hide Blizzard party frames
+	local function HideBlizzardPartyFrames()
+		-- Can't modify protected frames during combat
+		if InCombatLockdown() then
+			return
 		end
+		
+		-- BCA/Retail PartyFrame.MemberFrame structure
+		if _G.PartyFrame then
+			if XPerl_BlizzFrameDisable then
+				XPerl_BlizzFrameDisable(PartyFrame)
+			else
+				PartyFrame:Hide()
+				PartyFrame:UnregisterAllEvents()
+			end
+			
+			for i = 1, 4 do
+				local memberFrame = PartyFrame["MemberFrame"..i]
+				if memberFrame then
+					memberFrame:Hide()
+					memberFrame:UnregisterAllEvents()
+				end
+			end
+		end
+		
+		-- Classic/TBC/Wrath PartyMemberFrame1-4
+		for i = 1, 4 do
+			local frame = _G["PartyMemberFrame"..i]
+			if frame and XPerl_BlizzFrameDisable then
+				XPerl_BlizzFrameDisable(frame)
+			end
+		end
+
+		-- Disable "Raid-style party frames" CVar only — do NOT touch CompactRaidFrameManager
+		-- itself, as that also controls the Blizzard raid frames. Hiding/disabling the
+		-- manager here would suppress the native raid UI even when ZPerl_RaidFrames is
+		-- not loaded, or when the user has "Disable the default raid frames" turned off.
+		pcall(SetCVar, "useCompactPartyFrames", "0")
 	end
+
+	HideBlizzardPartyFrames()
+	XPerl_HideBlizzardPartyFrames = HideBlizzardPartyFrames
 
 	self:SetScript("OnEvent", XPerl_Party_OnEvent)
 	XPerl_RegisterOptionChanger(XPerl_Party_Set_Bits)
@@ -1451,6 +1485,11 @@ function XPerl_Party_Events:GROUP_ROSTER_UPDATE()
 	CheckRaid()
 	XPerl_SetHighlights()
 	XPerl_Party_UpdateDisplayAll()
+	
+	-- Hide Blizzard party frames when roster changes
+	if XPerl_HideBlizzardPartyFrames then
+		XPerl_HideBlizzardPartyFrames()
+	end
 end
 
 XPerl_Party_Events.PLAYER_LOGIN = XPerl_Party_Events.GROUP_ROSTER_UPDATE

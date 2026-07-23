@@ -273,6 +273,8 @@ if GetLocale() == "esES" or GetLocale() == "esMX" then
 	XPERL_CONF_PLAYER_BUFFSABOVE_DESC		= "Display the player buffs above the frame instead of below"
 	XPERL_CONF_PLAYER_BUFFSHIDEBLIZZ		= "Hide Default Buffs"
 	XPERL_CONF_PLAYER_BUFFSHIDEBLIZZ_DESC	= "Hide the default UI buff frames"
+	XPERL_CONF_PLAYER_HIGHLIGHTOWNBUFFS		= "Resaltar Propios Buffs"
+	XPERL_CONF_PLAYER_HIGHLIGHTOWNBUFFS_DESC	= "Muestra tus propios buffs en un tamaño más grande, similar a como se resaltan tus debuffs en los enemigos."
 	XPERL_CONF_PLAYER_BUFFSIZE				= "Buff Size"
 	XPERL_CONF_PLAYER_BUFFSIZE_DESC			= "Adjust the size of the player buff icons"
 	XPERL_CONF_PLAYER_DEBUFFSIZE			= "Debuff Size"

@@ -19,7 +19,6 @@ end, "$Revision:  $")
 
 local _, _, _, clientRevision = GetBuildInfo()
 
-local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
 local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
@@ -93,18 +92,16 @@ end
 local function overrideToggle(value)
 	local pconf = ArcaneBars.player
 	if (pconf) then
-		local castingFrame = PlayerCastingBarFrame or CastingBarFrame
 		if (value) then
 			if (pconf.bar.Overrided) then
-				local CastbarEventHandler = function(event, ...)
-					return XPerl_ArcaneBar_OnEvent(castingFrame, event, ...)
-				end
+				-- restore default Blizzard casting bar events/visibility
 				for i, event in pairs(events) do
-					if IsRetail then
-						castingFrame:RegisterEvent(event)
-					else
-						if event ~= "UNIT_SPELLCAST_INTERRUPTIBLE" and event ~= "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" then
-							castingFrame:RegisterEvent(event)
+					if PlayerCastingBarFrame and PlayerCastingBarFrame.RegisterEvent then
+						PlayerCastingBarFrame:RegisterEvent(event)
+					end
+					if event ~= "UNIT_SPELLCAST_INTERRUPTIBLE" and event ~= "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" then
+						if CastingBarFrame and CastingBarFrame.RegisterEvent then
+							CastingBarFrame:RegisterEvent(event)
 						end
 					end
 				end
@@ -112,12 +109,13 @@ local function overrideToggle(value)
 			end
 		else
 			if (not pconf.bar.Overrided) then
-				if IsRetail then
-					castingFrame:Hide()
-					castingFrame:UnregisterAllEvents()
-				else
-					castingFrame:Hide()
-					castingFrame:UnregisterAllEvents()
+				if PlayerCastingBarFrame then
+					if PlayerCastingBarFrame.Hide then PlayerCastingBarFrame:Hide() end
+					if PlayerCastingBarFrame.UnregisterAllEvents then PlayerCastingBarFrame:UnregisterAllEvents() end
+				end
+				if CastingBarFrame then
+					if CastingBarFrame.Hide then CastingBarFrame:Hide() end
+					if CastingBarFrame.UnregisterAllEvents then CastingBarFrame:UnregisterAllEvents() end
 				end
 				pconf.bar.Overrided = 1
 			end
