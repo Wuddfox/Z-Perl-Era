@@ -297,13 +297,6 @@ if GetLocale() == "koKR" then
 	XPERL_CONF_PLAYER_WRAPBUFFS_DESC	= "프레임 너비를 벗어나는 버프를 묶습니다."
 	XPERL_CONF_PLAYER_BUFF_ROWS		= "버프 열"
 	XPERL_CONF_PLAYER_BUFF_ROWS_DESC	= "표시할 버프와 디버프 열의 최대 개수를 조절합니다."
-	XPERL_CONF_PLAYER_TOTEMS		= "블리자드 토템창"
-	XPERL_CONF_PLAYER_TOTEMS_ENABLE		= "사용"
-	XPERL_CONF_PLAYER_TOTEMS_ENABLE_DESC	= "블리자드 토템창을 가로챕니다."
-	XPERL_CONF_PLAYER_TOTEM_OFFSETX		= "수평 오프셋"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETX_DESC	= "수평 오프셋을 조절합니다."
-	XPERL_CONF_PLAYER_TOTEM_OFFSETY		= "수직 오프셋"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETY_DESC	= "수직 오프셋을 조절합니다."
 
 	XPERL_CONF_TARGET_PORTRAIT		= "사진 표시"
 	XPERL_CONF_TARGET_PORTRAIT_DESC		= "대상 사진 표시"
@@ -711,9 +704,6 @@ if GetLocale() == "koKR" then
 	XPERL_CONF_RAID_HIGHLIGHTS_HOTCOUNT_DESC = "Will indicate on a unit how many active HOTs they currently have from ANY class"
 	XPERL_CONF_RAID_HIGHLIGHTS_TARGET	= "나의 대상"
 	XPERL_CONF_RAID_HIGHLIGHTS_TARGET_DESC	= "파티와 공격대 프레임에 당신의 대상을 표시합니다."
-	if not IsClassic then
-		XPERL_CONF_RAID_HIGHLIGHTS_MENDING_DESC	= "회복의 기원 추적을 사용합니다. 번쩍임 효과를 사용하면, 쉽게 알아 볼 수 있게 바운싱 효과로 표시합니다."
-	end
 	XPERL_CONF_RAID_HIGHLIGHTS_SPARKLES	= "번쩍임"
 	XPERL_CONF_RAID_HIGHLIGHTS_SPARKLES_DESC= "새로운 강조 효과를 사용합니다. 이 설정을 끄면 이전 테두리 색상으로 표시합니다."
 	XPERL_CONF_RAID_HIGHLIGHTS_EXTRA	= "추가 번쩍임"

@@ -37,11 +37,6 @@ end
 
 --local new, del, copy = XPerl_GetReusableTable, XPerl_FreeTable, XPerl_CopyTable
 
-local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local IsPandaClassic = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
-local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-
 local _G = _G
 local abs = abs
 local format = format
@@ -133,25 +128,12 @@ for k, v in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 	end
 end
 
-local resSpells
-if IsRetail then
-	resSpells = {
-		[C_Spell.GetSpellInfo(2006) and C_Spell.GetSpellInfo(2006).name] = true,			-- Resurrection
-		[C_Spell.GetSpellInfo(2008) and C_Spell.GetSpellInfo(2008).name] = true,			-- Ancestral Spirit
-		[C_Spell.GetSpellInfo(20484) and C_Spell.GetSpellInfo(20484).name] = true,			-- Rebirth
-		[C_Spell.GetSpellInfo(7328) and C_Spell.GetSpellInfo(7328).name] = true,			-- Redemption
-		[C_Spell.GetSpellInfo(50769) and C_Spell.GetSpellInfo(50769).name] = true,			-- Revive
-		--[C_Spell.GetSpellInfo(83968) and C_Spell.GetSpellInfo(83968).name] = true,			-- Mass Resurrection
-		[C_Spell.GetSpellInfo(115178) and C_Spell.GetSpellInfo(115178).name] = true,		-- Resuscitate
-	}
-else
-	resSpells = {
-		[GetSpellInfo(2006)] = true,			-- Resurrection
-		[GetSpellInfo(2008)] = true,			-- Ancestral Spirit
-		[GetSpellInfo(20484)] = true,			-- Rebirth
-		[GetSpellInfo(7328)] = true,			-- Redemption
-	}
-end
+local resSpells = {
+	[GetSpellInfo(2006)] = true,			-- Resurrection
+	[GetSpellInfo(2008)] = true,			-- Ancestral Spirit
+	[GetSpellInfo(20484)] = true,			-- Rebirth
+	[GetSpellInfo(7328)] = true,			-- Redemption
+}
 
 local hotSpells = XPERL_HIGHLIGHT_SPELLS.hotSpells
 
@@ -173,7 +155,7 @@ function XPerl_Raid_OnLoad(self)
 		"UNIT_AURA",
 		"UNIT_POWER_FREQUENT",
 		"UNIT_MAXPOWER",
-		IsClassic and "UNIT_HEALTH_FREQUENT" or "UNIT_HEALTH",
+		"UNIT_HEALTH_FREQUENT",
 		"UNIT_MAXHEALTH",
 		"UNIT_NAME_UPDATE",
 		"PLAYER_FLAGS_CHANGED",
@@ -204,68 +186,21 @@ function XPerl_Raid_OnLoad(self)
 		end
 	end
 
+	-- COMPACT_UNIT_FRAME_PROFILES_LOADED is one-shot and can fire before this
+	-- frame's OnLoad gets a chance to register for it above, which would silently
+	-- skip the "hide default raid frames" logic forever (WoW doesn't replay past
+	-- events for late listeners). If Blizzard's profile data is already present by
+	-- the time we get here, run that handler directly instead of waiting for an
+	-- event that already happened.
+	if CompactUnitFrameProfiles and CompactUnitFrameProfiles.selectedProfile then
+		XPerl_Raid_Events.COMPACT_UNIT_FRAME_PROFILES_LOADED(self)
+	end
+
 	self:SetScript("OnEvent", XPerl_Raid_OnEvent)
 
 	for i = 1, CLASS_COUNT do
 		--_G["XPerl_Raid_Grp"..i]:UnregisterEvent("UNIT_NAME_UPDATE")
 		tinsert(raidHeaders, _G[XPERL_RAIDGRP_PREFIX..i])
-	end
-
-	if not IsClassic then
-		self.state = CreateFrame("Frame", nil, nil, "SecureHandlerStateTemplate")
-		self.state:SetFrameRef("ZPerlRaidHeader1", _G[XPERL_RAIDGRP_PREFIX..1])
-		self.state:SetFrameRef("ZPerlRaidHeader2", _G[XPERL_RAIDGRP_PREFIX..2])
-		self.state:SetFrameRef("ZPerlRaidHeader3", _G[XPERL_RAIDGRP_PREFIX..3])
-		self.state:SetFrameRef("ZPerlRaidHeader4", _G[XPERL_RAIDGRP_PREFIX..4])
-		self.state:SetFrameRef("ZPerlRaidHeader5", _G[XPERL_RAIDGRP_PREFIX..5])
-		self.state:SetFrameRef("ZPerlRaidHeader6", _G[XPERL_RAIDGRP_PREFIX..6])
-		self.state:SetFrameRef("ZPerlRaidHeader7", _G[XPERL_RAIDGRP_PREFIX..7])
-		self.state:SetFrameRef("ZPerlRaidHeader8", _G[XPERL_RAIDGRP_PREFIX..8])
-		self.state:SetFrameRef("ZPerlRaidHeader9", _G[XPERL_RAIDGRP_PREFIX..9])
-		self.state:SetFrameRef("ZPerlRaidHeader10", _G[XPERL_RAIDGRP_PREFIX..10])
-		self.state:SetFrameRef("ZPerlRaidHeader11", _G[XPERL_RAIDGRP_PREFIX..11])
-		self.state:SetFrameRef("ZPerlRaidHeader12", _G[XPERL_RAIDGRP_PREFIX..12])
-		self.state:SetFrameRef("ZPerlRaidHeader13", _G[XPERL_RAIDGRP_PREFIX..13])
-
-		self.state:SetAttribute("partySmallRaid", XPerlDB.party.smallRaid)
-		self.state:SetAttribute("raidEnabled", XPerlDB.raid.enable)
-
-		self.state:SetAttribute("_onstate-groupupdate", [[
-			--print(newstate)
-
-			if newstate == "hide" then
-				self:GetFrameRef("ZPerlRaidHeader1"):Hide()
-				self:GetFrameRef("ZPerlRaidHeader2"):Hide()
-				self:GetFrameRef("ZPerlRaidHeader3"):Hide()
-				self:GetFrameRef("ZPerlRaidHeader4"):Hide()
-				self:GetFrameRef("ZPerlRaidHeader5"):Hide()
-				self:GetFrameRef("ZPerlRaidHeader6"):Hide()
-				self:GetFrameRef("ZPerlRaidHeader7"):Hide()
-				self:GetFrameRef("ZPerlRaidHeader8"):Hide()
-				self:GetFrameRef("ZPerlRaidHeader9"):Hide()
-				self:GetFrameRef("ZPerlRaidHeader10"):Hide()
-				self:GetFrameRef("ZPerlRaidHeader11"):Hide()
-				self:GetFrameRef("ZPerlRaidHeader12"):Hide()
-				self:GetFrameRef("ZPerlRaidHeader13"):Hide()
-			elseif self:GetAttribute('partySmallRaid') or not self:GetAttribute('raidEnabled') then
-				return
-			else
-				self:GetFrameRef("ZPerlRaidHeader1"):Show()
-				self:GetFrameRef("ZPerlRaidHeader2"):Show()
-				self:GetFrameRef("ZPerlRaidHeader3"):Show()
-				self:GetFrameRef("ZPerlRaidHeader4"):Show()
-				self:GetFrameRef("ZPerlRaidHeader5"):Show()
-				self:GetFrameRef("ZPerlRaidHeader6"):Show()
-				self:GetFrameRef("ZPerlRaidHeader7"):Show()
-				self:GetFrameRef("ZPerlRaidHeader8"):Show()
-				self:GetFrameRef("ZPerlRaidHeader9"):Show()
-				self:GetFrameRef("ZPerlRaidHeader10"):Show()
-				self:GetFrameRef("ZPerlRaidHeader11"):Show()
-				self:GetFrameRef("ZPerlRaidHeader12"):Show()
-				self:GetFrameRef("ZPerlRaidHeader13"):Show()
-			end
-		]])
-		RegisterStateDriver(self.state, "groupupdate", "[petbattle] hide; show")
 	end
 
 	self.Array = { }
@@ -565,18 +500,6 @@ local function XPerl_Raid_UpdateHealPrediction(self)
 	end
 end
 
--- XPerl_Raid_UpdateHotsPrediction
-local function XPerl_Raid_UpdateHotsPrediction(self)
-	if not IsPandaClassic then
-		return
-	end
-	if rconf.hotPrediction then
-		XPerl_SetExpectedHots(self)
-	else
-		self.statsFrame.expectedHots:Hide()
-	end
-end
-
 local function XPerl_Raid_UpdateResurrectionStatus(self)
 	if (UnitHasIncomingResurrection(self.partyid)) then
 		self.statsFrame.resurrect:Show()
@@ -619,7 +542,6 @@ local function XPerl_Raid_UpdateHealth(self)
 
 	XPerl_Raid_UpdateAbsorbPrediction(self)
 	XPerl_Raid_UpdateHealPrediction(self)
-	XPerl_Raid_UpdateHotsPrediction(self)
 	XPerl_Raid_UpdateResurrectionStatus(self)
 
 	local name, realm = UnitName(partyid)
@@ -1061,7 +983,7 @@ local function XPerl_Raid_UpdateCombat(self)
 	else
 		self.nameFrame.combatIcon:Hide()
 	end
-	if UnitIsVisible(partyid) and UnitIsCharmed(partyid) and UnitIsPlayer(partyid) and (not IsClassic and not UnitUsingVehicle(partyid) or true) then
+	if UnitIsVisible(partyid) and UnitIsCharmed(partyid) and UnitIsPlayer(partyid) then
 		self.nameFrame.warningIcon:Show()
 	else
 		self.nameFrame.warningIcon:Hide()
@@ -1223,7 +1145,7 @@ local function XPerl_Raid_RaidTargetUpdate(self)
 end
 
 local function SetRoleIconTexture(texture, role)
-	if not rconf.role_icons then
+	if not rconf.role then
 		return false
 	end
 	if (conf.xperlOldroleicons) then
@@ -1292,7 +1214,7 @@ function XPerl_Raid_UpdateDisplay(self)
 		XPerl_Raid_UpdateManaType(self)
 		XPerl_Raid_UpdateMana(self)
 	end
-	if not IsVanillaClassic then
+	if type(UnitGroupRolesAssigned) == "function" then
 		XPerl_Raid_RoleUpdate(self, UnitGroupRolesAssigned(self.partyid))
 	end
 	XPerl_Raid_UpdatePlayerFlags(self)
@@ -1332,14 +1254,8 @@ function XPerl_Raid_HideShowRaid()
 
 	for i = 1, CLASS_COUNT do
 		if (rconf.group[i] and enable and (i < 9 or rconf.sortByClass) and not singleGroup) then
-			if not IsClassic and not C_PetBattles.IsInBattle() then
-				if (not raidHeaders[i]:IsShown()) then
-					raidHeaders[i]:Show()
-				end
-			else
-				if (not raidHeaders[i]:IsShown()) then
-					raidHeaders[i]:Show()
-				end
+			if (not raidHeaders[i]:IsShown()) then
+				raidHeaders[i]:Show()
 			end
 		else
 			if (raidHeaders[i]:IsShown()) then
@@ -1382,13 +1298,7 @@ local function DisableCompactRaidFrames()
 	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate10Players", false)
 	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate15Players", false)
 	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate40Players", false)
-	if IsClassic then
-		SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate20Players", false)
-	else
-		SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate25Players", false)
-		SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivateSpec1", false)
-		SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivateSpec2", false)
-	end
+	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate20Players", false)
 	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivatePvP", false)
 	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivatePvE", false)
 	--CompactUnitFrameProfiles_ApplyCurrentSettings()
@@ -1416,13 +1326,7 @@ function XPerl_Raid_Events:COMPACT_UNIT_FRAME_PROFILES_LOADED()
 			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate10Players", true)
 			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate15Players", true)
 			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate40Players", true)
-			if IsClassic then
-				SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate20Players", true)
-			else
-				SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate25Players", true)
-				SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivateSpec1", true)
-				SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivateSpec2", true)
-			end
+			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivate20Players", true)
 			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivatePvP", true)
 			SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "autoActivatePvE", true)
 			CompactUnitFrameProfiles_SaveChanges(CompactUnitFrameProfiles)
@@ -1432,9 +1336,7 @@ function XPerl_Raid_Events:COMPACT_UNIT_FRAME_PROFILES_LOADED()
 		end
 		return
 	end
-	if IsClassic then
-		DisableCompactRaidFrames()
-	end
+	DisableCompactRaidFrames()
 	if CompactRaidFrameManager then
 		CompactRaidFrameManager:UnregisterAllEvents()
 		hooksecurefunc(CompactRaidFrameManager, "Show", function(self)
@@ -1591,11 +1493,11 @@ function XPerl_Raid_Events:GROUP_ROSTER_UPDATE()
 	BuildGuidMap()
 	if (IsInRaid() or (IsInGroup() and rconf.inParty)) then
 		XPerl_Raid_Frame:Show()
-		if not IsVanillaClassic then
-			if (rconf.raid_role) then
+		if type(UnitGroupRolesAssigned) == "function" then
+			if (rconf.role) then
 				for i, frame in pairs(FrameArray) do
 					if (frame.partyid) then
-						XPerl_Raid_RoleUpdate(self, UnitGroupRolesAssigned(self.partyid))
+						XPerl_Raid_RoleUpdate(frame, UnitGroupRolesAssigned(frame.partyid))
 					end
 				end
 			end
@@ -1722,7 +1624,7 @@ end
 -- UnitGroupRolesAssigned function will return the oldRole if used in this event
 function XPerl_Raid_Events:ROLE_CHANGED_INFORM(targetUnit, sourceUnit, oldRole, newRole)
 	local id = RaidPositions[targetUnit]
-	if (rconf.role_icons) then
+	if (rconf.role) then
 		if (id) then
 			XPerl_Raid_RoleUpdate(FrameArray[id], newRole)
 		end
@@ -1812,12 +1714,6 @@ XPerl_Raid_Events.UNIT_SPELLCAST_INTERRUPTED = XPerl_Raid_Events.UNIT_SPELLCAST_
 function XPerl_Raid_Events:UNIT_HEAL_PREDICTION(unit)
 	if rconf.healprediction and unit == self.partyid then
 		XPerl_SetExpectedHealth(self)
-	end
-	if not IsPandaClassic then
-		return
-	end
-	if rconf.hotPrediction and unit == self.partyid then
-		XPerl_SetExpectedHots(self)
 	end
 end
 
@@ -2583,49 +2479,17 @@ local function SetMainHeaderAttributes(self)
 end
 
 local function DefaultRaidClasses()
-	if IsRetail then
-		return {
-			{enable = true, name = "WARRIOR"},
-			{enable = true, name = "DEATHKNIGHT"},
-			{enable = true, name = "ROGUE"},
-			{enable = true, name = "HUNTER"},
-			{enable = true, name = "MAGE"},
-			{enable = true, name = "WARLOCK"},
-			{enable = true, name = "PRIEST"},
-			{enable = true, name = "DRUID"},
-			{enable = true, name = "SHAMAN"},
-			{enable = true, name = "PALADIN"},
-			{enable = true, name = "MONK"},
-			{enable = true, name = "DEMONHUNTER"},
-			{enable = true, name = "EVOKER"}
-		}
-	elseif IsPandaClassic then
-		return {
-			{enable = true, name = "WARRIOR"},
-			{enable = true, name = "DEATHKNIGHT"},
-			{enable = true, name = "ROGUE"},
-			{enable = true, name = "HUNTER"},
-			{enable = true, name = "MAGE"},
-			{enable = true, name = "WARLOCK"},
-			{enable = true, name = "PRIEST"},
-			{enable = true, name = "DRUID"},
-			{enable = true, name = "SHAMAN"},
-			{enable = true, name = "PALADIN"},
-			{enable = true, name = "MONK"},
-		}
-	else
-		return {
-			{enable = true, name = "WARRIOR"},
-			{enable = true, name = "ROGUE"},
-			{enable = true, name = "HUNTER"},
-			{enable = true, name = "MAGE"},
-			{enable = true, name = "WARLOCK"},
-			{enable = true, name = "PRIEST"},
-			{enable = true, name = "DRUID"},
-			{enable = true, name = "SHAMAN"},
-			{enable = true, name = "PALADIN"},
-		}
-	end
+	return {
+		{enable = true, name = "WARRIOR"},
+		{enable = true, name = "ROGUE"},
+		{enable = true, name = "HUNTER"},
+		{enable = true, name = "MAGE"},
+		{enable = true, name = "WARLOCK"},
+		{enable = true, name = "PRIEST"},
+		{enable = true, name = "DRUID"},
+		{enable = true, name = "SHAMAN"},
+		{enable = true, name = "PALADIN"},
+	}
 end
 
 local function GroupFilter(n)
@@ -2675,7 +2539,7 @@ function XPerl_Raid_ChangeAttributes()
 
 	rconf.anchor = (rconf and rconf.anchor) or "TOP"
 
-	for i = 1, rconf.sortByClass and CLASS_COUNT or (IsVanillaClassic and 9 or (IsPandaClassic and 11 or 13)) do
+	for i = 1, rconf.sortByClass and CLASS_COUNT or 9 do
 		local groupHeader = raidHeaders[i]
 
 		-- Guard against nil raidHeaders entry

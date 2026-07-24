@@ -3,7 +3,6 @@
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
 local ArcaneBars = {}
-local shield_icon = "|TInterface\\GroupFrame\\UI-Group-MainTankIcon:0:0:0:0|t"
 
 --[===[@debug@
 local function d(...)
@@ -16,8 +15,6 @@ XPerl_RequestConfig(function(new)
 	conf = new
 end, "$Revision:  $")
 
-
-local _, _, _, clientRevision = GetBuildInfo()
 
 local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
 local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
@@ -179,11 +176,7 @@ function XPerl_ArcaneBar_OnEvent(self, event, unit, ...)
 		end
 
 		self:SetStatusBarColor(barColours.main.r, barColours.main.g, barColours.main.b, conf.transparency.frame)
-		if (not IsClassic and notInterruptible) then
-			self.spellText:SetText(shield_icon..shield_icon..name:gsub(" %- No Text", "")..shield_icon..shield_icon)
-		else
-			self.spellText:SetText(name:gsub(" %- No Text", ""))
-		end
+		self.spellText:SetText(name:gsub(" %- No Text", ""))
 		self.castID = castID
 		self.barParentName:Hide()
 		self.barSpark:Show()
@@ -262,11 +255,7 @@ function XPerl_ArcaneBar_OnEvent(self, event, unit, ...)
 				self:Hide()
 				return
 			end
-			if (not IsClassic and notInterruptible) then
-				self.spellText:SetText(shield_icon..shield_icon..name:gsub(" %- No Text", "")..shield_icon..shield_icon)
-			else
-				self.spellText:SetText(name:gsub(" %- No Text", ""))
-			end
+			self.spellText:SetText(name:gsub(" %- No Text", ""))
 			self.startTime = startTime / 1000
 			self.maxValue = endTime / 1000
 			self:SetMinMaxValues(self.startTime, self.maxValue)
@@ -294,11 +283,7 @@ function XPerl_ArcaneBar_OnEvent(self, event, unit, ...)
 		self:SetStatusBarColor(barColours.channel.r, barColours.channel.g, barColours.channel.b, conf.transparency.frame)
 		self.barSpark:Show()
 		self.barParentName:Hide()
-		if (not IsClassic and notInterruptible) then
-			self.spellText:SetText(shield_icon..shield_icon..name:gsub(" %- No Text", "")..shield_icon..shield_icon)
-		else
-			self.spellText:SetText(name:gsub(" %- No Text", ""))
-		end
+		self.spellText:SetText(name:gsub(" %- No Text", ""))
 		self.maxValue = 1
 		self.startTime = startTime / 1000
 		self.endTime = endTime / 1000

@@ -2,9 +2,6 @@
 -- Author: Resike
 -- License: GNU GPL v3, 18 October 2014
 
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-
 local max = max
 local pairs = pairs
 local strfind = strfind
@@ -71,7 +68,7 @@ function ZPerl_TargetTarget_OnLoad(self)
 	XPerl_SetChildMembers(self)
 
 	local events = {
-		IsClassic and "UNIT_HEALTH_FREQUENT" or "UNIT_HEALTH",
+		"UNIT_HEALTH_FREQUENT",
 		"UNIT_POWER_FREQUENT",
 		"UNIT_AURA",
 		"UNIT_TARGET",
@@ -98,9 +95,7 @@ function ZPerl_TargetTarget_OnLoad(self)
 	elseif (self == XPerl_FocusTarget) then
 		self.parentid = "focus"
 		self.partyid = "focustarget"
-		if not IsVanillaClassic then
-			self:RegisterEvent("PLAYER_FOCUS_CHANGED")
-		end
+		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 		for i, event in pairs(events) do
 			self:RegisterUnitEvent(event, "focus")
 		end
@@ -365,7 +360,7 @@ end
 -- XPerl_TargetTarget_Update_Control
 local function XPerl_TargetTarget_Update_Control(self)
 	local partyid = self.partyid
-	if UnitIsVisible(partyid) and UnitIsCharmed(partyid) and UnitIsPlayer(self.partyid) and (not IsClassic and not UnitUsingVehicle(partyid) or true) then
+	if UnitIsVisible(partyid) and UnitIsCharmed(partyid) and UnitIsPlayer(self.partyid) then
 		self.nameFrame.warningIcon:Show()
 	else
 		self.nameFrame.warningIcon:Hide()
@@ -547,20 +542,9 @@ function XPerl_TargetTarget_Update(self)
 					offset = 0
 				end
 				offset = offset + 20
-				local name
-				if not IsVanillaClassic and C_UnitAuras then
-					local auraData = C_UnitAuras.GetAuraDataByIndex("targettarget", 9, "HELPFUL")
-					if auraData then
-						name = auraData.name
-						if name then
-							offset = offset + 20
-						end
-					end
-				else
-					name = UnitAura("targettarget", 9, "HELPFUL")
-					if name then
-						offset = offset + 20
-					end
+				local name = UnitAura("targettarget", 9, "HELPFUL")
+				if name then
+					offset = offset + 20
 				end
 			end
 			if XPerl_UnitDebuff("targettarget", 1) then

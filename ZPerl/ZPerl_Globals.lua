@@ -2,10 +2,6 @@
 -- Author: Resike
 -- License: GNU GPL v3, 29 June 2007 (see LICENSE.txt)
 
-local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local IsPandaClassic = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
-local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-
 XPerlLocked = 1
 local conf
 local ConfigRequesters = {}
@@ -703,48 +699,17 @@ end
 
 -- DefaultRaidClasses
 local function DefaultRaidClasses()
-	if IsRetail then
-		return {
-			{enable = true, name = "WARRIOR"},
-			{enable = true, name = "DEATHKNIGHT"},
-			{enable = true, name = "ROGUE"},
-			{enable = true, name = "HUNTER"},
-			{enable = true, name = "MAGE"},
-			{enable = true, name = "WARLOCK"},
-			{enable = true, name = "PRIEST"},
-			{enable = true, name = "DRUID"},
-			{enable = true, name = "SHAMAN"},
-			{enable = true, name = "PALADIN"},
-			{enable = true, name = "MONK"},
-			{enable = true, name = "DEMONHUNTER"},
-			{enable = true, name = "EVOKER"}
-		}
-	elseif IsPandaClassic then
-		return {
-			{enable = true, name = "WARRIOR"},
-			{enable = true, name = "DEATHKNIGHT"},
-			{enable = true, name = "ROGUE"},
-			{enable = true, name = "HUNTER"},
-			{enable = true, name = "MAGE"},
-			{enable = true, name = "WARLOCK"},
-			{enable = true, name = "PRIEST"},
-			{enable = true, name = "DRUID"},
-			{enable = true, name = "SHAMAN"},
-			{enable = true, name = "PALADIN"},
-		}
-	else
-		return {
-			{enable = true, name = "WARRIOR"},
-			{enable = true, name = "ROGUE"},
-			{enable = true, name = "HUNTER"},
-			{enable = true, name = "MAGE"},
-			{enable = true, name = "WARLOCK"},
-			{enable = true, name = "PRIEST"},
-			{enable = true, name = "DRUID"},
-			{enable = true, name = "SHAMAN"},
-			{enable = true, name = "PALADIN"},
-		}
-	end
+	return {
+		{enable = true, name = "WARRIOR"},
+		{enable = true, name = "ROGUE"},
+		{enable = true, name = "HUNTER"},
+		{enable = true, name = "MAGE"},
+		{enable = true, name = "WARLOCK"},
+		{enable = true, name = "PRIEST"},
+		{enable = true, name = "DRUID"},
+		{enable = true, name = "SHAMAN"},
+		{enable = true, name = "PALADIN"},
+	}
 end
 
 -- ValidateClassNames
@@ -754,14 +719,7 @@ local function ValidateClassNames(part)
 	end
 	-- This should never happen, but I'm sure someone will find a way to break it
 
-	local list
-	if IsRetail then
-		list = {WARRIOR = false, MAGE = false, ROGUE = false, DRUID = false, HUNTER = false, SHAMAN = false, PRIEST = false, WARLOCK = false, PALADIN = false, DEATHKNIGHT = false, MONK = false, DEMONHUNTER = false, EVOKER = false}
-	elseif IsPandaClassic then
-		list = {WARRIOR = false, MAGE = false, ROGUE = false, DRUID = false, HUNTER = false, SHAMAN = false, PRIEST = false, WARLOCK = false, PALADIN = false, DEATHKNIGHT = false}
-	else
-		list = {WARRIOR = false, MAGE = false, ROGUE = false, DRUID = false, HUNTER = false, SHAMAN = false, PRIEST = false, WARLOCK = false, PALADIN = false}
-	end
+	local list = {WARRIOR = false, MAGE = false, ROGUE = false, DRUID = false, HUNTER = false, SHAMAN = false, PRIEST = false, WARLOCK = false, PALADIN = false}
 	local valid
 	if (part.class) then
 		local classCount = 0

@@ -16,10 +16,6 @@ local XTitle
 local pendingTankListChange -- If in combat when tank list changes, then we'll defer it till next time we're out of combat
 local conf
 
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-local IsPandaClassic = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
-
 local GetNumGroupMembers = GetNumGroupMembers
 
 if type(RegisterAddonMessagePrefix) == "function" then
@@ -190,7 +186,7 @@ local function UpdateUnit(self,forcedUpdate)
 			self.combatIcon:Hide()
 		end
 
-		if UnitIsCharmed(xunit) and UnitIsPlayer(xunit) and (not IsVanillaClassic and not UnitInVehicle("player") or true) then
+		if UnitIsCharmed(xunit) and UnitIsPlayer(xunit) then
 			self.warningIcon:Show()
 		else
 			self.warningIcon:Hide()
@@ -278,12 +274,7 @@ function XPerl_MTListUnit_OnEnter(self)
 					XPerl_BottomTip:SetOwner(GameTooltip, a2, 0, 10)
 					XPerl_BottomTip:SetUnit(parentID)
 
-					if IsPandaClassic then
-						XPerl_BottomTip:OnBackdropLoaded()
-						XPerl_BottomTip:SetBackdropColor(0.1, 0.4, 0.1, 0.75)
-					else
-						XPerl_BottomTip.NineSlice:SetCenterColor(0.1, 0.4, 0.1, 0.75)
-					end
+					XPerl_BottomTip.NineSlice:SetCenterColor(0.1, 0.4, 0.1, 0.75)
 				end
 			end
 		else
@@ -298,12 +289,7 @@ function XPerl_MTListUnit_OnEnter(self)
 				GameTooltip:SetOwner(self, a1)
 				GameTooltip:SetUnit(partyid)
 
-				if IsPandaClassic then
-					GameTooltip:OnBackdropLoaded()
-					GameTooltip:SetBackdropColor(0.1, 0.4, 0.1, 0.75)
-				else
-					GameTooltip.NineSlice:SetCenterColor(0.1, 0.4, 0.1, 0.75)
-				end
+				GameTooltip.NineSlice:SetCenterColor(0.1, 0.4, 0.1, 0.75)
 			end
 		end
 	end
@@ -433,7 +419,7 @@ function XPerl_MTRosterChanged()
 		-- Scan roster, adding any new ones, and removing found ones from old tanks list
 		for i = 1, GetNumGroupMembers() do
 			local unitid = "raid"..i
-			if ((not IsVanillaClassic and UnitGroupRolesAssigned(unitid) == "TANK") or GetPartyAssignment("maintank", unitid)) then
+			if ((type(UnitGroupRolesAssigned) == "function" and UnitGroupRolesAssigned(unitid) == "TANK") or GetPartyAssignment("maintank", unitid)) then
 				local name = GetUnitName(unitid, true)
 				local name2, realm = UnitName(unitid)
 				if (name ~= name2) then
@@ -739,7 +725,7 @@ end
 -- Registration
 local function Registration()
 	local list = {
-		IsClassic and "UNIT_HEALTH_FREQUENT" or "UNIT_HEALTH",
+		"UNIT_HEALTH_FREQUENT",
 		"UNIT_MAXHEALTH",
 		"UNIT_TARGET",
 		"UNIT_FACTION",

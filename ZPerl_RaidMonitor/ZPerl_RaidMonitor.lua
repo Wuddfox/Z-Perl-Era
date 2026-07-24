@@ -8,9 +8,6 @@ local TableUnits = {}			-- Dynamic list of units indexed by raid id, changed on 
 ZPerlRaidMonConfig = {}
 local config = ZPerlRaidMonConfig
 
-local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-
 local GetNumGroupMembers = GetNumGroupMembers
 local GetNumSubgroupMembers = GetNumSubgroupMembers
 local UnitCastingInfo = UnitCastingInfo
@@ -43,13 +40,6 @@ function XPerl_RaidMonitor_OnLoad(self)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE")
 	self:SetScript("OnEvent", XPerl_RaidMonitor_OnEvent)
 	self:SetScript("OnUpdate", self.OnUpdate)
-
-	if IsRetail then
-		XPerl_RaidMonitor_Frame_TitleBarCloseButton:SetScale(0.66)
-		XPerl_RaidMonitor_Frame_TitleBarCloseButton:SetPoint("TOPRIGHT", 2, 2)
-		XPerl_RaidMonitor_Frame_TitleBarPin:SetPoint("RIGHT", XPerl_RaidMonitor_Frame_TitleBarCloseButton, "LEFT", 0, 0)
-		XPerl_RaidMonitor_Frame_TitleBarTotals:SetPoint("RIGHT", XPerl_RaidMonitor_Frame_TitleBarPin, "LEFT", 0, 0)
-	end
 
 	if (XPerl_RegisterPerlFrames) then
 		XPerl_RegisterPerlFrames(XPerl_RaidMonitor_Frame)
@@ -609,7 +599,7 @@ function XPerl_RaidMonitor_Init(self)
 		self.area:SetAttribute("sortMethod", "NAME")
 		self.area:SetAttribute("sortDir", "ASC")
 		self.area:SetAttribute("groupBy", "CLASS")		-- For API version 20003
-		self.area:SetAttribute("groupingOrder", "PRIEST,DRUID,SHAMAN,PALADIN,MAGE,WARLOCK,HUNTER,ROGUE,WARRIOR,DEATHKNIGHT,MONK,DEMONHUNTER,EVOKER")
+		self.area:SetAttribute("groupingOrder", "PRIEST,DRUID,SHAMAN,PALADIN,MAGE,WARLOCK,HUNTER,ROGUE,WARRIOR")
 
 		self:SetAttribute("type", "target")
 		self:SetAttribute("initial-height", config.UnitHeight)
@@ -997,7 +987,7 @@ function XPerl_RaidMonitor_Init(self)
 			"UNIT_POWER_FREQUENT",
 			"UNIT_MAXPOWER",
 			"UNIT_MANA",
-			IsClassic and "UNIT_HEALTH_FREQUENT" or "UNIT_HEALTH",
+			"UNIT_HEALTH_FREQUENT",
 			"UNIT_MAXHEALTH",
 			"UNIT_TARGET",
 			"UNIT_SPELLCAST_START",

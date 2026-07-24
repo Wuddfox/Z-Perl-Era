@@ -325,13 +325,6 @@ if GetLocale() == "zhTW" then
 	XPERL_CONF_PLAYER_WRAPBUFFS_DESC	= "隱藏超出框架寬度的增減益圖示"
 	XPERL_CONF_PLAYER_BUFF_ROWS		= "Buff 列"
 	XPERL_CONF_PLAYER_BUFF_ROWS_DESC	= "調整增益或減益圖示顯示最大列數"
-	XPERL_CONF_PLAYER_TOTEMS		= "Blizzard 內建圖騰框架"
-	XPERL_CONF_PLAYER_TOTEMS_ENABLE		= "啟用"
-	XPERL_CONF_PLAYER_TOTEMS_ENABLE_DESC	= "調整 Blizzard 內建圖騰框架"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETX		= "水平偏移量"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETX_DESC	= "調整水平偏移量"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETY		= "垂直偏移量"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETY_DESC	= "調整垂直偏移量"
 
 	XPERL_CONF_TARGET_PORTRAIT              = "目標頭像"
 	XPERL_CONF_TARGET_PORTRAIT_DESC         = "顯示目標的頭像。\r|c00FF0000注意: 戰鬥傷害顯示依靠這功能."
@@ -830,15 +823,6 @@ if GetLocale() == "zhTW" then
 	XPERL_CONF_RAID_HIGHLIGHTS_HOTCOUNT_DESC = "顯示當前 HOTs 性質法術倒數(不分職業)"
 	XPERL_CONF_RAID_HIGHLIGHTS_TARGET	= "我的目標"
 	XPERL_CONF_RAID_HIGHLIGHTS_TARGET_DESC	= "表明您的目標在隊伍和團隊框架"
-	if IsRetail then
-		XPERL_CONF_RAID_HIGHLIGHTS_MENDING_DESC	= "啟用"..(C_Spell.GetSpellInfo(33076) and C_Spell.GetSpellInfo(33076).name).."追蹤。若啟用閃爍效果，將會以彈跳的圖示的方式來追蹤此 buff。"
-		XPERL_CONF_RAID_HIGHLIGHTS_RENEWING_DESC= "啟用"..(C_Spell.GetSpellInfo(115151) and C_Spell.GetSpellInfo(115151).name).."追蹤. 若啟用閃爍效果，將會以彈跳的圖示的方式來追蹤此 buff。"
-		--XPERL_CONF_RAID_HIGHLIGHTS_BEACON		= GetSpellInfo(157007) -- Beacon of Insight
-		--XPERL_CONF_RAID_HIGHLIGHTS_BEACON_DESC	= "Enable the "..GetSpellInfo(157007).." tracking. With sparkles enabled, this will show a bouncing graphic to make it easier to follow the buff."
-	elseif IsPandaClassic then
-		XPERL_CONF_RAID_HIGHLIGHTS_MENDING		= GetSpellInfo(33076) -- Prayer of Mending
-		XPERL_CONF_RAID_HIGHLIGHTS_MENDING_DESC	= "啟用"..GetSpellInfo(33076).."追蹤。若啟用閃爍效果，將會以彈跳的圖示的方式來追蹤此 buff。"
-	end
 	XPERL_CONF_RAID_HIGHLIGHTS_SPARKLES	= "閃爍效果"
 	XPERL_CONF_RAID_HIGHLIGHTS_SPARKLES_DESC= "使用新的、更明顯、生動的閃爍效果。關閉此選項將會回復預設的效果。"
 	XPERL_CONF_RAID_HIGHLIGHTS_EXTRA	= "追加閃爍效果"
@@ -1099,12 +1083,6 @@ if GetLocale() == "zhTW" then
 	XPERL_CONF_MONITOR_ROGUE_DESC		= "在團隊監視中顯示 盜賊"
 	XPERL_CONF_MONITOR_WARRIOR		= "顯示 戰士"
 	XPERL_CONF_MONITOR_WARRIOR_DESC		= "在團隊監視中顯示 戰士"
-	XPERL_CONF_MONITOR_DEATHKNIGHT		= "顯示 死亡騎士"
-	XPERL_CONF_MONITOR_DEATHKNIGHT_DESC	= "在團隊監視中顯示 死亡騎士"
-	XPERL_CONF_MONITOR_MONK			        = "顯示 武僧"
-	XPERL_CONF_MONITOR_MONK_DESC		    = "在團隊監視中顯示 武僧"
-	XPERL_CONF_MONITOR_DEMONHUNTER			= "顯示 惡魔獵人"
-	XPERL_CONF_MONITOR_DEMONHUNTER_DESC		= "在團隊監視中顯示 惡魔獵人"
 
 	XPERL_CONF_MONITOR_LOWMANA		= "低法力"
 	XPERL_CONF_MONITOR_LOWMANA_DESC		= "設置低法力監視數值"

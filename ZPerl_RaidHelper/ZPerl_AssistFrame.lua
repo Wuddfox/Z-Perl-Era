@@ -7,8 +7,6 @@ XPerl_RequestConfig(function(new)
 	conf = new
 end, "$Revision:  $")
 
-local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-
 local myClass
 local playerAggro, petAggro
 local doUpdate					-- In cases where we get multiple UNIT_TARGET events in 1 frame, we just set a flag and do during OnUpdate
@@ -335,12 +333,6 @@ function XPerl_Assists_OnEvent(self, event, unit)
 	elseif (event == "PLAYER_ENTERING_WORLD") then
 		if (XPerl_Highlight) then
 			XPerl_Highlight:ClearAll("AGGRO")
-		end
-
-		if IsRetail then
-			XPerlAssistsCloseButton:SetScale(0.66)
-			XPerlAssistsCloseButton:SetPoint("TOPRIGHT", -6, -6)
-			XPerlAssistPin:SetPoint("RIGHT", XPerlAssistsCloseButton, "LEFT", 0, 0)
 		end
 
 		MakeFriendlyUnitList()

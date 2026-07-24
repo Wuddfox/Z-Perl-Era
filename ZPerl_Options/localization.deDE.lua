@@ -303,13 +303,6 @@ if GetLocale() == "deDE" then
 	XPERL_CONF_PLAYER_WRAPBUFFS_DESC		= "Buffs welche die Breite des Fensters \195\188berschreiten zusammenfassen"
 	XPERL_CONF_PLAYER_BUFF_ROWS				= "Buff Reihen"
 	XPERL_CONF_PLAYER_BUFF_ROWS_DESC		= "Passe die Anzeige f\195\188r die maximale Anzahl von Reihen f\195\188r Buffs und Debuffs an"
-	XPERL_CONF_PLAYER_TOTEMS				= "Blizzard Totem Fenster"
-	XPERL_CONF_PLAYER_TOTEMS_ENABLE			= "Aktiviert"
-	XPERL_CONF_PLAYER_TOTEMS_ENABLE_DESC	= "Hijack das Blizzard Totem Fenster"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETX			= "Horizontale Verschiebung"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETX_DESC	= "Die horizontale Verschiebung anpassen"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETY			= "Vertikale Verschiebung"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETY_DESC	= "Die vertikale Verschiebung anpassen"
 
 	XPERL_CONF_TARGET_PORTRAIT				= "Zielportrait"
 	XPERL_CONF_TARGET_PORTRAIT_DESC			= "Aktiviere die Anzeige f\195\188r das Zielportrait\r|c00FF0000BEACHTE: Der Trefferindikator ist abh\195\164ngig hiervon."
@@ -752,9 +745,6 @@ if GetLocale() == "deDE" then
 	XPERL_CONF_RAID_HIGHLIGHTS_HOTCOUNT_DESC 	= "Zeigt bei einer Einheit, wie viele aktiven HOTs diese gerade von JEDER Klasse hat"
 	XPERL_CONF_RAID_HIGHLIGHTS_TARGET			= "Mein Ziel"
 	XPERL_CONF_RAID_HIGHLIGHTS_TARGET_DESC		= "Zeigt Dein Ziel an den Gruppen und Schlachtzugfenstern"
-	if not IsClassic then
-		XPERL_CONF_RAID_HIGHLIGHTS_MENDING_DESC	= "Aktiviere "..(C_Spell.GetSpellInfo(33076) and C_Spell.GetSpellInfo(33076).name).." Verfolgung. Mit aktiviertem Glanz, zeigt dies eine prahlerische Grafik um den Buff besser verfolgen zu k\195\182nnen"
-	end
 	XPERL_CONF_RAID_HIGHLIGHTS_SPARKLES			= "Glanz"
 	XPERL_CONF_RAID_HIGHLIGHTS_SPARKLES_DESC	= "Verwende das neue Glanz-Aussehen f\195\188r eine strahlender und besser sichtbare Methode des Hervorhebens. Deaktivieren f\195\188r die alten Randfarben."
 	XPERL_CONF_RAID_HIGHLIGHTS_EXTRA			= "Extra Glanz"
@@ -992,8 +982,6 @@ if GetLocale() == "deDE" then
 	XPERL_CONF_MONITOR_ROGUE_DESC			= "Zeige Schurken im Schlachtzugsmonitor"
 	XPERL_CONF_MONITOR_WARRIOR				= "Zeige Krieger"
 	XPERL_CONF_MONITOR_WARRIOR_DESC			= "Zeige Krieger im Schlachtzugsmonitor"
-	XPERL_CONF_MONITOR_DEATHKNIGHT			= "Zeige Todesritter"
-	XPERL_CONF_MONITOR_DEATHKNIGHT_DESC		= "Zeige Todesritter im Schlachtzugsmonitor"
 
 	XPERL_CONF_MONITOR_LOWMANA				= "Wenig Mana"
 	XPERL_CONF_MONITOR_LOWMANA_DESC			= "Setze den niedrigsten Mana-Punkt"

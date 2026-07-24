@@ -121,12 +121,6 @@ local function XPerl_RaidPets_UpdateName(self)
 		return
 	end
 	local name
-	if (self.ownerid and not IsVanillaClassic and (UnitInVehicle(self.ownerid) or UnitHasVehicleUI(self.ownerid))) then
-		name = UnitName(self.ownerid)
-		if (name) then
-			self.text:SetFormattedText("<%s>", name)
-		end
-	end
 	if (not name and partyid) then
 		name = UnitName(partyid)
 		if name then

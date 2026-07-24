@@ -470,7 +470,7 @@ end
 -- XPerl_Party_Pet_Update_Control
 local function XPerl_Party_Pet_Update_Control(self)
 	local partyid = self.partyid
-	if partyid and UnitIsVisible(partyid) and UnitIsCharmed(partyid) and UnitIsPlayer(partyid) and (not IsClassic and not UnitUsingVehicle(partyid) or true) then
+	if partyid and UnitIsVisible(partyid) and UnitIsCharmed(partyid) and UnitIsPlayer(partyid) then
 		self.nameFrame.warningIcon:Show()
 	else
 		self.nameFrame.warningIcon:Hide()

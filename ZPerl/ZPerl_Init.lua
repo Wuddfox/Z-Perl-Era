@@ -8,12 +8,6 @@ XPerl_RequestConfig(function(new)
 	conf = new
 end, "$Revision:  $")
 
-local _, _, _, clientRevision = GetBuildInfo()
-
-local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local IsPandaClassic = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
-local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-
 local _G = _G
 local format = format
 local geterrorhandler = geterrorhandler
@@ -44,14 +38,7 @@ local UnitInRaid = UnitInRaid
 local UnitIsGroupAssistant = UnitIsGroupAssistant
 local UnitName = UnitName
 
-local classOrder
-if IsRetail then
-	classOrder = {"WARRIOR", "DEATHKNIGHT", "ROGUE", "HUNTER", "DRUID", "SHAMAN", "PALADIN", "PRIEST", "MAGE", "WARLOCK", "MONK", "DEMONHUNTER", "EVOKER"}
-elseif IsPandaClassic then
-	classOrder = {"WARRIOR", "DEATHKNIGHT", "ROGUE", "HUNTER", "DRUID", "SHAMAN", "PALADIN", "PRIEST", "MAGE", "WARLOCK"}
-else
-	classOrder = {"WARRIOR", "ROGUE", "HUNTER", "DRUID", "SHAMAN", "PALADIN", "PRIEST", "MAGE", "WARLOCK"}
-end
+local classOrder = {"WARRIOR", "ROGUE", "HUNTER", "DRUID", "SHAMAN", "PALADIN", "PRIEST", "MAGE", "WARLOCK"}
 
 -- SetTexCreateColor
 local highlightPositions = {
@@ -278,21 +265,8 @@ local function GetNamesWithoutBuff(spellName, with, filter)
 			local hasBuff
 			for i = 1, 40 do
 				local name, icon, applications, duration, expirationTime, sourceUnit, isStealable
-				if not IsVanillaClassic and C_UnitAuras then
-					local auraData = C_UnitAuras.GetAuraDataByIndex(unitid, i, filter)
-					if auraData then
-						name = auraData.name
-						icon = auraData.icon
-						applications = auraData.applications
-						duration = auraData.duration
-						expirationTime = auraData.expirationTime
-						sourceUnit = auraData.sourceUnit
-						isStealable = auraData.isStealable
-					end
-				else
-					local _
-					name, icon, applications, _, duration, expirationTime, sourceUnit, isStealable = UnitAura(unitid, i, filter)
-				end
+				local _
+				name, icon, applications, _, duration, expirationTime, sourceUnit, isStealable = UnitAura(unitid, i, filter)
 				if not name then
 					break
 				end
@@ -417,21 +391,8 @@ end
 local function XPerl_ToolTip_AddBuffDuration(self, partyid, buffID, filter)
 	if IsInRaid() or UnitInParty("player") then
 		local name, applications, duration, expirationTime, sourceUnit, isStealable
-		if not IsVanillaClassic and C_UnitAuras then
-			local auraData = C_UnitAuras.GetAuraDataByIndex(partyid, buffID, filter)
-			if auraData then
-				name = auraData.name
-				icon = auraData.icon
-				applications = auraData.applications
-				duration = auraData.duration
-				expirationTime = auraData.expirationTime
-				sourceUnit = auraData.sourceUnit
-				isStealable = auraData.isStealable
-			end
-		else
-			local _
-			name, _, applications, _, duration, expirationTime, sourceUnit, isStealable = UnitAura(partyid, buffID, filter)
-		end
+		local _
+		name, _, applications, _, duration, expirationTime, sourceUnit, isStealable = UnitAura(partyid, buffID, filter)
 
 		if conf.buffHelper.enable and partyid and (UnitInParty(partyid) or UnitInRaid(partyid)) then
 			if name then

@@ -73,7 +73,6 @@ local UIParent = UIParent
 local new, del, copy = XPerl_GetReusableTable, XPerl_FreeTable, XPerl_CopyTable
 
 local hotSpells  = XPERL_HIGHLIGHT_SPELLS.hotSpells
-local pomSpells = XPERL_HIGHLIGHT_SPELLS.pomSpells
 local shieldSpells = XPERL_HIGHLIGHT_SPELLS.shieldSpells
 
 local function GetTalentPosition(findName)
@@ -198,7 +197,6 @@ end
 
 local colours = {
 	HOT = {r = 0.2, g = 0.4, b = 0.8, canFlash = true},
-	POM = {r = 0.8, g = 0.6, b = 0.4},
 	SHIELD = {r = 0.6, g = 0.1, b = 0.6, canFlash = true},
 	AGGRO = {r = 0.8, g = 0, b = 0},
 	HEAL = {r = 0.2, g = 0.8, b = 0.2},
@@ -211,7 +209,6 @@ xpHigh.list = {}
 xpHigh.callbacks = {}
 xpHigh.lastExpireCheck = 0
 xpHigh.flashers = {}
-xpHigh.mendingIcons = {}
 xpHigh.shields = {}
 
 -- rotate
@@ -344,10 +341,6 @@ function xpHigh:OnUpdate(elapsed)
 		end
 	end
 
-	if (self.mendingAnimation) then
-		self:MendingAnimationOnUpdate(elapsed)
-	end
-
 	if (self.sparkleAreas) then
 		self:SparkleAreasOnUpdate(elapsed)
 	end
@@ -408,15 +401,13 @@ function xpHigh:SetHighlight(frame, guid)
 
 	self:OnUpdate(0)
 
-	local hotCount, pomActive, hotBar, hotSparks, showShield
+	local hotCount, hotBar, hotSparks, showShield
 	if (guid and conf.highlight.enable) then
 		local r = self.list[guid]
 		if (r) then
 			local r1, g1, b1, r2, g2, b2, t1
 			for k, v in pairs(r) do
-				if (k == "POM" and conf.highlight.sparkles) then
-					pomActive = true
-				elseif (k == "HOTCOUNT") then
+				if (k == "HOTCOUNT") then
 					hotCount = v
 				elseif (k == "HOT" and conf.highlight.sparkles) then
 					hotBar = true
@@ -463,7 +454,6 @@ function xpHigh:SetHighlight(frame, guid)
 					XPerl_FrameFlashStop(frame.highlight.tex)
 				end
 				self:ShowHotCount(frame, hotCount)
-				self:ShowMending(frame, pomActive)
 				self:ShowHotBar(frame, hotBar)
 				self:ShowHotSparks(frame, hotSparks)
 				self:ShowShieldBar(frame, self.shields[guid])
@@ -474,7 +464,6 @@ function xpHigh:SetHighlight(frame, guid)
 
 	self:RemoveHighlight(frame)
 	self:ShowHotCount(frame, hotCount)
-	self:ShowMending(frame, pomActive)
 	self:ShowHotBar(frame, hotBar)
 	self:ShowHotSparks(frame, hotSparks)
 	self:ShowShieldBar(frame, self.shields[guid])
@@ -691,17 +680,8 @@ function xpHigh:GetMyHotTime(unit)
 	local maxDur, maxTimeLeft = 0, 0
 	for i = 1, 40 do
 		local name, duration, expirationTime
-		if not IsVanillaClassic and C_UnitAuras then
-			local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, "HELPFUL|PLAYER")
-			if auraData then
-				name = auraData.name
-				duration = auraData.duration
-				expirationTime = auraData.expirationTime
-			end
-		else
-			local _
-			name, _, _, _, duration, expirationTime = UnitAura(unit, i, "HELPFUL|PLAYER")
-		end
+		local _
+		name, _, _, _, duration, expirationTime = UnitAura(unit, i, "HELPFUL|PLAYER")
 		if (not name) then
 			break
 		end
@@ -780,14 +760,7 @@ end
 function xpHigh:HasMyHOT(unit)
 	for i = 1, 40 do
 		local name
-		if not IsVanillaClassic and C_UnitAuras then
-			local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, "HELPFUL|PLAYER")
-			if auraData then
-				name = auraData.name
-			end
-		else
-			name = UnitAura(unit, i, "HELPFUL|PLAYER")
-		end
+		name = UnitAura(unit, i, "HELPFUL|PLAYER")
 		if not name then
 			break
 		end
@@ -821,349 +794,6 @@ function xpHigh:ShowHotCount(frame, hotCount, unitid)
 
 	if (h.hot) then
 		h.hot:Hide()
-	end
-end
-
--- GetMyPomEndTime
-function xpHigh:GetMyPomEndTime(unit)
-	for i = 1, 40 do
-		local name, expirationTime
-		if not IsVanillaClassic and C_UnitAuras then
-			local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, "HELPFUL|PLAYER")
-			if auraData then
-				name = auraData.name
-				expirationTime = auraData.expirationTime
-			end
-		else
-			local _
-			name, _, _, _, _, expirationTime = UnitAura(unit, i, "HELPFUL|PLAYER")
-		end
-		if (not name) then
-			break
-		end
-		if (pomSpells[name]) then
-			return expirationTime
-		end
-	end
-end
-
--- ShowMending
-function xpHigh:ShowMending(frame, show)
-	local h = frame.highlight
-
-	if (show and conf.highlight.POM and conf.highlight.sparkles) then
-		if (not h.mending or not h.mending:GetParent():IsShown()) then
-			self:CreateMendingIcon(frame)
-		end
-
-		if (h.mending) then
-			local unit = SecureButton_GetUnit(frame)
-			if (unit) then
-				h.mending.endTime = self:GetMyPomEndTime(unit) or 30
-				h.mending:Show()
-			end
-		end
-		return
-	end
-
-	if (h.mending) then
-		h.mending:Hide()
-		tinsert(self.mendingIcons, h.mending)
-		h.mending = nil
-	end
-end
-
--- mendingOnUpdate
-local function mendingOnUpdate(self, elapsed)
-	if (self.shineMode == "in") then
-		self.shineAlpha = self.shineAlpha + elapsed
-		if (self.shineAlpha >= 1) then
-			self.shineAlpha = 1
-			self.shineMode = "out"
-		end
-	else
-		self.shineAlpha = self.shineAlpha - elapsed
-		if (self.shineAlpha <= 0.3) then
-			self.shineAlpha = 0.3
-			self.shineMode = "in"
-		end
-	end
-
-	self.shineAngle = self.shineAngle + elapsed * 3
-	if (self.shineAngle > 360) then
-		self.shineAngle = self.shineAngle - 360
-	end
-
-	self.shine:SetTexCoord(rotate(self.shineAngle))
-
-	self.shine:SetVertexColor(1, 1, 1, self.shineAlpha)
-
-	if (GetTime() > self.endTime - 5) then
-		self:SetAlpha(self.shineAlpha)
-	else
-		self:SetAlpha(1)
-	end
-end
-
--- CreateMendingIcon
-function xpHigh:CreateMendingIcon(frame)
-	local h = frame.highlight
-	local p = frame.statsFrame		-- or frame
-	local anchor = "CENTER"
-	local anchorRel = "TOP"
-	local anchorRelP = p
-	local sizeMod = -8
-	local xOffset, yOffset = 0, 0
-	if (p) then
-		p = p.healthBar or p
-		if (strfind(p:GetName(), "^XPerl_Raid")) then
-			sizeMod = 0
-			yOffset = -2
-		else
-			sizeMod = 10
-			yOffset = -4
-		end
-	end
-
-	if (h and p) then
-		local icon = h.mending
-		if (not icon) then
-			icon = tremove(self.mendingIcons, 1)
-			h.mending = icon
-		end
-		if (icon) then
-			-- Re-parent
-			icon:SetParent(p)
-			icon:ClearAllPoints()
-		else
-			icon = CreateFrame("Frame", nil, p, BackdropTemplateMixin and "BackdropTemplate")
-			h.mending = icon
-			icon.tex = icon:CreateTexture(nil, "BACKGROUND")
-			icon.tex:SetAllPoints()
-			local _, class = UnitClass("player")
-			if class == "MONK" then
-				if IsRetail then
-					local itemInfo = C_Spell.GetSpellInfo(115151)
-					if itemInfo and itemInfo.iconID then
-						icon.tex:SetTexture(itemInfo.iconID)
-					end
-				else
-					local _, _, texture = GetSpellInfo(115151)
-					icon.tex:SetTexture(texture)
-				end
-			elseif class == "PALADIN" then
-				if IsRetail then
-					local itemInfo = C_Spell.GetSpellInfo(157007)
-					if itemInfo and itemInfo.iconID then
-						icon.tex:SetTexture(itemInfo.iconID)
-					end
-				else
-					local _, _, texture = GetSpellInfo(157007)
-					icon.tex:SetTexture(texture)
-				end
-			else
-				if IsRetail then
-					local itemInfo = C_Spell.GetSpellInfo(33076)
-					if itemInfo and itemInfo.iconID then
-						icon.tex:SetTexture(itemInfo.iconID)
-					end
-				else
-					local _, _, texture = GetSpellInfo(33076)
-					icon.tex:SetTexture(texture)
-				end
-			end
-			icon.tex:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-
-			icon.shine = self:CreateShine(icon)
-			icon.shine:SetPoint("TOPLEFT", -5, 5)
-			icon.shine:SetPoint("BOTTOMRIGHT", 5, -5)
-		end
-
-		icon:SetWidth(p:GetHeight() + sizeMod)
-		icon:SetHeight(p:GetHeight() + sizeMod)
-		icon:SetPoint(anchor, anchorRelP, anchorRel, xOffset, yOffset)
-		icon:Hide()
-
-		local x1, y1 = icon:GetCenter()
-		local x2, y2 = frame:GetCenter()
-
-		if x1 and x2 and y1 and y2 then
-			frame.lastPomPosX = x1 - x2
-			frame.lastPomPosY = y1 - y2
-		end
-
-		icon.shine:Show()
-		icon.shine:SetVertexColor(1, 1, 1, 0)
-		icon:SetScript("OnUpdate", mendingOnUpdate)
-
-		icon:SetScript("OnShow", function(self)
-			self.shineAngle = 0
-			self.shineAlpha = 0
-			self.shineMode = "in"
-			self:SetAlpha(1)
-		end)
-	end
-end
-
--- TriggerMendingAnimation
-function xpHigh:TriggerMendingAnimation(sourceGUID, targetGUID)
-	local sourceFrame, targetFrame
-	if (IsInRaid() and XPerl_Raid_GetUnitFrameByUnit) then
-		sourceFrame, targetFrame = XPerl_Raid_GetUnitFrameByGUID(sourceGUID), XPerl_Raid_GetUnitFrameByGUID(targetGUID)
-		if (not sourceFrame and XPerl_Raid_Pet_GetUnitFrameByGUID) then
-			sourceFrame = XPerl_Raid_Pet_GetUnitFrameByGUID(sourceGUID)
-		end
-		if (not targetFrame and XPerl_Raid_Pet_GetUnitFrameByGUID) then
-			targetFrame = XPerl_Raid_Pet_GetUnitFrameByGUID(targetGUID)
-		end
-	elseif (GetNumSubgroupMembers() > 0 and XPerl_Party_GetUnitFrameByUnit) then
-		sourceFrame = sourceGUID == UnitGUID("player") and XPerl_Player or XPerl_Party_GetUnitFrameByGUID(sourceGUID)
-		targetFrame = targetGUID == UnitGUID("player") and XPerl_Player or XPerl_Party_GetUnitFrameByGUID(targetGUID)
-		if (not sourceFrame and XPerl_Party_Pet_GetUnitFrameByGUID) then
-			sourceFrame = XPerl_Party_Pet_GetUnitFrameByGUID(sourceGUID)
-		end
-		if (not targetFrame and XPerl_Party_Pet_GetUnitFrameByGUID) then
-			targetFrame = XPerl_Party_Pet_GetUnitFrameByGUID(targetGUID)
-		end
-	end
-
-	if (sourceFrame and targetFrame) then
-		self:StartMendingAnimation(sourceFrame, targetFrame)
-	end
-end
-
--- StartMendingAnimation
-function xpHigh:StartMendingAnimation(sourceFrame, targetFrame)
-	local oldMA = self.mendingAnimation
-
-	local ma = new()
-	self.mendingAnimation = ma
-
-	local sx, sy = sourceFrame:GetCenter()
-	local tx, ty = targetFrame:GetCenter()
-	local ss, ts = sourceFrame:GetEffectiveScale(), targetFrame:GetEffectiveScale()
-
-	if (oldMA) then
-		ma.sourceX = oldMA.currentX
-		ma.sourceY = oldMA.currentY
-	else
-		ma.sourceX = (sx + (sourceFrame.lastPomPosX or 0)) * ss
-		ma.sourceY = (sy + (sourceFrame.lastPomPosY or 0)) * ss
-	end
-
-	ma.targetX = (tx + (targetFrame.lastPomPosX or 0)) * ts
-	ma.targetY = (ty + (targetFrame.lastPomPosY or 0)) * ts
-	ma.currentX = ma.sourceX
-	ma.currentY = ma.sourceY
-
-	-- Star will take 0.667 seconds to arrive
-	ma.speedX = (ma.targetX - ma.sourceX) * 1.5
-	ma.speedY = (ma.targetY - ma.sourceY) * 1.5
-
-	ma.shown = 0
-	ma.showGap = 1
-	local icons = self.mendingAnimationIcons
-	if (not icons) then
-		icons = {}
-		self.mendingAnimationIcons = icons
-		for i = 1, 3 do
-			local icon = CreateFrame("Frame", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate")
-			icons[i] = icon
-			icon:SetFrameStrata("DIALOG")
-			icon:SetHeight((4 - i) * 8)
-			icon:SetWidth((4 - i) * 8)
-
-			icon.tex = icon:CreateTexture(nil, "OVERLAY")
-			icon.tex:SetTexture(166928)
-			icon.tex:SetAllPoints()
-			icon.tex:SetVertexColor(1 / i, 1 / i, 0.7 / i)
-			icon.tex:SetBlendMode("ADD")
-			icon.angle = 0
-		end
-	else
-		for i = 1, 3 do
-			icons[i]:Hide()
-		end
-	end
-
-	del(oldMA)
-end
-
--- MendingAnimationOnUpdate
-function xpHigh:MendingAnimationOnUpdate(elapsed)
-	local ma = self.mendingAnimation
-	local icons = self.mendingAnimationIcons
-
-	local x, y = ma.currentX, ma.currentY
-
-	ma.currentX = ma.currentX + ma.speedX * elapsed
-	ma.currentY = ma.currentY + ma.speedY * elapsed
-
-	if ((ma.speedX < 0 and ma.currentX < ma.targetX) or (ma.speedX > 0 and ma.currentX > ma.targetX)) then
-		ma.currentX = ma.targetX
-		ma.speedX = 0
-		if (ma.speedY == 0) then
-			ma.endCounter = 0
-		end
-	end
-	if ((ma.speedY < 0 and ma.currentY < ma.targetY) or (ma.speedY > 0 and ma.currentY > ma.targetY)) then
-		ma.currentY = ma.targetY
-		ma.speedY = 0
-		if (ma.speedX == 0) then
-			ma.endCounter = 0
-		end
-	end
-
-	if (ma.shown < 3) then
-		ma.showGap = ma.showGap + elapsed
-		if (ma.showGap > 0.2) then
-			ma.showGap = 0
-
-			ma.shown = ma.shown + 1
-			icons[ma.shown]:Show()
-		end
-	end
-
-	for i = 1, ma.shown do
-		local icon = icons[i]
-		icon:ClearAllPoints()
-		if (i == 1) then
-			icon:SetPoint("CENTER", UIParent, "BOTTOMLEFT", ma.currentX / UIParent:GetScale(), ma.currentY / UIParent:GetScale())
-		else
-			icon:SetPoint("CENTER", UIParent, "BOTTOMLEFT", (ma.currentX - (ma.speedX * elapsed * i)) / UIParent:GetScale(), (ma.currentY - (ma.speedY * elapsed * i)) / UIParent:GetScale())
-		end
-
-		icon.angle = icon.angle + elapsed * 3
-		if (icon.angle > 360) then
-			icon.angle = icon.angle - 360
-		end
-		icon.tex:SetTexCoord(rotate(icon.angle))
-	end
-
-	if (ma.endCounter) then
-		ma.endCounter = ma.endCounter + 1
-		if (ma.endCounter >= 5) then
-			self:StopMendingAnimation()
-		end
-	elseif (self.expectingPOM) then
-		if (GetTime() > self.expectingPOM + 2) then
-			self.expectingPOM = nil
-			self:StopMendingAnimation()
-		end
-	end
-end
-
--- StopMendingAnimation
-function xpHigh:StopMendingAnimation()
-	self.mendingAnimation = del(self.mendingAnimation)
-	local icons = self.mendingAnimationIcons
-	if (icons) then
-		for i = 1, 3 do
-			local icon = icons[i]
-			if (icon) then
-				icon:Hide()
-			end
-		end
 	end
 end
 
@@ -1476,19 +1106,6 @@ function xpHigh.clEvents:SPELL_CAST_SUCCESS(timestamp, event, srcGUID, srcName, 
 					self:Add(dstGUID, "SHIELD", shieldSpells[spellName])
 				end
 			end
-			if (pomSpells[spellName]) then
-				if (conf.highlight.POM) then
-					self.expectingPOM = nil
-					self.pomSourceGUID = nil
-					local _, class = UnitClass("player")
-					if (class == "PRIEST" or class == "MONK" or class == "PALADIN") then
-						self:ClearAll("POM")
-						self:StopMendingAnimation()
-					end
-					self:Add(dstGUID, "POM", pomSpells[spellName])
-					self.expectingPOM = nil
-				end
-			end
 		end
 	end
 end
@@ -1534,15 +1151,8 @@ function xpHigh.clEvents:SPELL_PERIODIC_HEAL(timestamp, event, srcGUID, srcName,
 					local index = 40
 					for i = 1, 39 do
 						local ID
-						if not IsVanillaClassic and C_UnitAuras then
-							local auraData = C_UnitAuras.GetAuraDataByIndex(checkName, i, "HELPFUL|PLAYER")
-							if auraData then
-								ID = auraData.spellId
-							end
-						else
-							local _
-							_, _, _, _, _, _, _, _, _, ID = UnitAura(checkName, i, "HELPFUL|PLAYER")
-						end
+						local _
+						_, _, _, _, _, _, _, _, _, ID = UnitAura(checkName, i, "HELPFUL|PLAYER")
 						if ID == spellID then
 							index = i
 							break
@@ -1550,16 +1160,8 @@ function xpHigh.clEvents:SPELL_PERIODIC_HEAL(timestamp, event, srcGUID, srcName,
 					end
 
 					local expirationTime, sourceUnit
-					if not IsVanillaClassic and C_UnitAuras then
-						local auraData = C_UnitAuras.GetAuraDataByIndex(checkName, index, "HELPFUL|PLAYER")
-						if auraData then
-							expirationTime = auraData.expirationTime
-							sourceUnit = auraData.sourceUnit
-						end
-					else
-						local _
-						_, _, _, _, _, expirationTime, sourceUnit = UnitAura(checkName, index, "HELPFUL|PLAYER")
-					end
+					local _
+					_, _, _, _, _, expirationTime, sourceUnit = UnitAura(checkName, index, "HELPFUL|PLAYER")
 
 					if sourceUnit then
 						-- Figure out how many seconds are left in the HOT so we can ensure the flashy only stays up as long as the HOT is active
@@ -1698,8 +1300,6 @@ function xpHigh.clEvents:SPELL_AURA_REMOVED(timestamp, event, srcGUID, srcName, 
 
 			if shieldSpells[spellName] then
 				self:ClearAll("SHIELD")
-			elseif pomSpells[spellName] then
-				self:ClearAll("POM")
 			end
 		end
 	end
@@ -1752,66 +1352,17 @@ function xpHigh:UNIT_HEAL_PREDICTION(unit)
 	self:Remove(guid, "HEAL")
 end
 
--- xpHigh:HasMyPomPom(unit)
-function xpHigh:HasMyPomPom(unit)
-	for i = 1, 40 do
-		local name, expirationTime
-		if not IsVanillaClassic and C_UnitAuras then
-			local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, "HELPFUL|PLAYER")
-			if auraData then
-				name = auraData.name
-				expirationTime = auraData.expirationTime
-			end
-		else
-			local _
-			name, _, _, _, _, expirationTime = UnitAura(unit, i, "HELPFUL|PLAYER")
-		end
-		if not name then
-			break
-		end
-		if pomSpells[name] then
-			return expirationTime - GetTime()
-		end
-	end
-end
-
 -- xpHigh:HasMyShield(unit)
 function xpHigh:HasMyShield(unit)
 	for i = 1, 40 do
 		local name, expirationTime
-		if not IsVanillaClassic and C_UnitAuras then
-			local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, "HELPFUL|PLAYER")
-			if auraData then
-				name = auraData.name
-				expirationTime = auraData.expirationTime
-			end
-		else
-			local _
-			name, _, _, _, _, expirationTime = UnitAura(unit, i, "HELPFUL|PLAYER")
-		end
+		local _
+		name, _, _, _, _, expirationTime = UnitAura(unit, i, "HELPFUL|PLAYER")
 		if not name then
 			break
 		end
 		if (shieldSpells[name]) then
 			return expirationTime - GetTime()
-		end
-	end
-end
-
--- xpHigh:FindMyPomPom()
-function xpHigh:FindMyPomPom()
-	for unit, unitName, unitClass, group in XPerl_NextMember do
-		local timeLeft = self:HasMyPomPom(unit)
-		if (timeLeft) then
-			return UnitGUID(unit), timeLeft
-		end
-
-		local petid = unit == "player" and "pet" or unit:gsub("^(%a+)(%d+)$", "%1pet%2")
-		if (UnitExists(petid)) then
-			local timeLeft = self:HasMyPomPom(petid)
-			if (timeLeft) then
-				return UnitGUID(petid), timeLeft
-			end
 		end
 	end
 end
@@ -1837,29 +1388,6 @@ function xpHigh:UNIT_AURA(unit)
 		return
 	end
 
-	if playerClass == "PRIEST" or playerClass == "MONK" or playerClass == "PALADIN" then
-		-- Check pom movement
-		if self:HasEffect(guid, "POM") then
-			if not self:HasMyPomPom(unit) then
-				self.pomSourceGUID = guid
-				self:Remove(guid, "POM")
-				self.expectingPOM = GetTime()
-			end
-		end
-
-		if self.expectingPOM then
-			local findGUID, timeLeft = self:FindMyPomPom()
-			if findGUID then
-				self.expectingPOM = nil
-				self:Add(findGUID, "POM", timeLeft)
-				self:TriggerMendingAnimation(self.pomSourceGUID, findGUID)
-			elseif GetTime() > self.expectingPOM + 2 then
-				self.expectingPOM = nil
-				self:StopMendingAnimation()
-			end
-		end
-	end
-
 	-- Check for pre-mature end of shield buff (Power Word: Shield, Earth Shield)
 	if playerClass == "SHAMAN" then	-- or playerClass == "PRIEST") then
 		if self:HasEffect(guid, "SHIELD") then
@@ -1873,14 +1401,7 @@ function xpHigh:UNIT_AURA(unit)
 		local hotCount = 0
 		for i = 1, 40 do
 			local name
-			if not IsVanillaClassic and C_UnitAuras then
-				local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, "HELPFUL")
-				if auraData then
-					name = auraData.name
-				end
-			else
-				name = UnitAura(unit, i, "HELPFUL")
-			end
+			name = UnitAura(unit, i, "HELPFUL")
 			if not name then
 				break
 			end
@@ -1922,7 +1443,6 @@ end
 
 -- xpHigh:RefreshAllAuras
 function xpHigh:RefreshAllAuras()
-	self.expectingPOM = nil
 	for unitid in XPerl_NextMember do
 		self:UNIT_AURA(unitid)
 	end
@@ -1936,7 +1456,7 @@ function xpHigh:OptionChange()
 	_, playerClass = UnitClass("player")
 	playerName = UnitName("player")
 
-	if (conf.highlight.enable and (conf.highlight.HOT or conf.highlight.SHIELD or conf.highlight.HEAL or conf.highlight.POM)) then
+	if (conf.highlight.enable and (conf.highlight.HOT or conf.highlight.SHIELD or conf.highlight.HEAL)) then
 		events = true
 		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	else
@@ -1945,9 +1465,6 @@ function xpHigh:OptionChange()
 
 	if (not conf.highlight.enable or not conf.highlight.HOT) then
 		self:ClearAll("HOT")
-	end
-	if (not conf.highlight.enable or not conf.highlight.POM) then
-		self:ClearAll("POM")
 	end
 	if (not conf.highlight.enable or not conf.highlight.SHIELD) then
 		self:ClearAll("SHIELD")
@@ -1963,7 +1480,7 @@ function xpHigh:OptionChange()
 		end
 	end
 
-	if (conf.highlight.enable and (conf.highlight.HOTCOUNT or conf.highlight.HOT or conf.highlight.SHIELD or conf.highlight.POM)) then
+	if (conf.highlight.enable and (conf.highlight.HOTCOUNT or conf.highlight.HOT or conf.highlight.SHIELD)) then
 		events = true
 		self:RegisterEvent("UNIT_AURA")
 		self:RegisterEvent("GROUP_ROSTER_UPDATE")

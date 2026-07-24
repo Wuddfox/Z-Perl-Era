@@ -309,13 +309,6 @@ if GetLocale() == "itIT" then
 	XPERL_CONF_PLAYER_WRAPBUFFS_DESC        = "Manda a capo i benefici che superano la larghezza della finestra"
 	XPERL_CONF_PLAYER_BUFF_ROWS                = "Righe benefici"
 	XPERL_CONF_PLAYER_BUFF_ROWS_DESC        = "Modifica il numero massimo di righe di benefici e penalità da visualizzare"
-	XPERL_CONF_PLAYER_TOTEMS                = "Finestra dei Totem"
-	XPERL_CONF_PLAYER_TOTEMS_ENABLE            = ENABLE
-	XPERL_CONF_PLAYER_TOTEMS_ENABLE_DESC    = "Modifica la finestra dei Totem standard"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETX            = "Offset Orizzontale"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETX_DESC    = "Imposta l'offset orizzontale"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETY            = "Offset Verticale"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETY_DESC    = "Imposta l'offset verticale"
 
 	XPERL_CONF_TARGET_PORTRAIT              = "Immagine bersaglio"
 	XPERL_CONF_TARGET_PORTRAIT_DESC         = "Abilita visualizzazione dell'immagine del bersaglio"
@@ -765,9 +758,6 @@ if GetLocale() == "itIT" then
 	XPERL_CONF_RAID_HIGHLIGHTS_HOTCOUNT_DESC = "Indicherà su un'unità quanti HOT attivi hanno e da che classi"
 	XPERL_CONF_RAID_HIGHLIGHTS_TARGET        = "Mio Bersaglio"
 	XPERL_CONF_RAID_HIGHLIGHTS_TARGET_DESC    = "Indica il tuo bersaglio nel gruppo e nelle finestre dell'incursione"
-	if not IsClassic then
-		XPERL_CONF_RAID_HIGHLIGHTS_MENDING_DESC    = "Abilita il controllo di "..(C_Spell.GetSpellInfo(33076) and C_Spell.GetSpellInfo(33076).name)..". Con le scintille attivate, questo visualizzerà un effetto che permetterà di vedere meglio il beneficio."
-	end
 	XPERL_CONF_RAID_HIGHLIGHTS_SPARKLES        = "Scintille"
 	XPERL_CONF_RAID_HIGHLIGHTS_SPARKLES_DESC= "Usa le nuove scintille per un approccio più apparente e vivido all'evidenziazione. Disabilità per usare i colori dei bordi di vecchio tipo"
 	XPERL_CONF_RAID_HIGHLIGHTS_EXTRA        = "Scintille Extra"
@@ -996,10 +986,6 @@ if GetLocale() == "itIT" then
 	XPERL_CONF_MONITOR_ROGUE_DESC = "Mostra i Ladri nel monitor dell'incursione"
 	XPERL_CONF_MONITOR_WARRIOR = "Mostra Guerriero"
 	XPERL_CONF_MONITOR_WARRIOR_DESC = "Mostra i Guerrieri nel monitor dell'incursione"
-	XPERL_CONF_MONITOR_DEATHKNIGHT = "Mostra Cavaliere della Morte"
-	XPERL_CONF_MONITOR_DEATHKNIGHT_DESC = "Mostra i Cavalieri della Morte nel monitor dell'incursione"
-	XPERL_CONF_MONITOR_MONK = "Mostra Monaco"
-	XPERL_CONF_MONITOR_MONK_DESC = "Mostra i Monaci nel monitor dell'incursione"
 
 	XPERL_CONF_MONITOR_LOWMANA = "Mana basso"
 	XPERL_CONF_MONITOR_LOWMANA_DESC = "Imposta il valore da utilizzare per determinare quando un giocatore ha il Mana basso"

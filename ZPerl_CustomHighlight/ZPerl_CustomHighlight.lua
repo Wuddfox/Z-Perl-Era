@@ -37,29 +37,29 @@ CustomHighlight.RaidFrameArray = XPerl_Raid_GetFrameArray()
 
 -- Pull zone names from encounter journal so they don't need to be localized.
 -- Cataclysm Raids
-local XPERL_LOC_ZONE_ANTORUS = not IsClassic and EJ_GetInstanceInfo(946) or XPERL_LOC_ZONE_ANTORUS
-local XPERL_LOC_ZONE_BARADIN_HOLD = not IsClassic and EJ_GetInstanceInfo(75) or XPERL_LOC_ZONE_BARADIN_HOLD
-local XPERL_LOC_ZONE_BASTION_OF_TWILIGHT = not IsClassic and EJ_GetInstanceInfo(72) or XPERL_LOC_ZONE_BASTION_OF_TWILIGHT
-local XPERL_LOC_ZONE_BLACK_TEMPLE = not IsClassic and EJ_GetInstanceInfo(751) or XPERL_LOC_ZONE_BLACK_TEMPLE
-local XPERL_LOC_ZONE_BLACKWING_DECENT = not IsClassic and EJ_GetInstanceInfo(73) or XPERL_LOC_ZONE_BLACKWING_DECENT
-local XPERL_LOC_ZONE_DRAGONSOUL = not IsClassic and EJ_GetInstanceInfo(187) or XPERL_LOC_ZONE_DRAGONSOUL
-local XPERL_LOC_ZONE_EMERALD_NIGHTMARE = not IsClassic and EJ_GetInstanceInfo(768) or XPERL_LOC_ZONE_EMERALD_NIGHTMARE
-local XPERL_LOC_ZONE_EYE_OF_ETERNITY = not IsClassic and EJ_GetInstanceInfo(946) or XPERL_LOC_ZONE_EYE_OF_ETERNITY
-local XPERL_LOC_ZONE_FIRELANDS = not IsClassic and EJ_GetInstanceInfo(78) or XPERL_LOC_ZONE_FIRELANDS
-local XPERL_LOC_ZONE_HYJAL_SUMMIT = not IsClassic and EJ_GetInstanceInfo(750) or XPERL_LOC_ZONE_HYJAL_SUMMIT
-local XPERL_LOC_ZONE_ICECROWN_CITADEL = not IsClassic and EJ_GetInstanceInfo(758) or XPERL_LOC_ZONE_ICECROWN_CITADEL
-local XPERL_LOC_ZONE_KARAZHAN = not IsClassic and EJ_GetInstanceInfo(745) or XPERL_LOC_ZONE_KARAZHAN
-local XPERL_LOC_ZONE_NAXXRAMAS = not IsClassic and EJ_GetInstanceInfo(754) or XPERL_LOC_ZONE_NAXXRAMAS
-local XPERL_LOC_ZONE_NIGHTHOLD = not IsClassic and EJ_GetInstanceInfo(786) or XPERL_LOC_ZONE_NIGHTHOLD
-local XPERL_LOC_ZONE_OBSIDIAN_SANCTUM = not IsClassic and EJ_GetInstanceInfo(755) or XPERL_LOC_ZONE_OBSIDIAN_SANCTUM
-local XPERL_LOC_ZONE_RUBY_SANCTUM = not IsClassic and EJ_GetInstanceInfo(761) or XPERL_LOC_ZONE_RUBY_SANCTUM
-local XPERL_LOC_ZONE_SERPENTSHRINE_CAVERN = not IsClassic and EJ_GetInstanceInfo(748) or XPERL_LOC_ZONE_SERPENTSHRINE_CAVERN
-local XPERL_LOC_ZONE_SUNWELL_PLATEAU = not IsClassic and EJ_GetInstanceInfo(752) or XPERL_LOC_ZONE_SUNWELL_PLATEAU
-local XPERL_LOC_ZONE_THRONE_OF_FOUR_WINDS = not IsClassic and EJ_GetInstanceInfo(74) or XPERL_LOC_ZONE_THRONE_OF_FOUR_WINDS
-local XPERL_LOC_ZONE_TOMB_OF_SARGERAS = not IsClassic and EJ_GetInstanceInfo(875) or XPERL_LOC_ZONE_TOMB_OF_SARGERAS
-local XPERL_LOC_ZONE_TRIAL_OF_THE_CRUSADER = not IsClassic and EJ_GetInstanceInfo(757) or XPERL_LOC_ZONE_TRIAL_OF_THE_CRUSADER
-local XPERL_LOC_ZONE_TRIAL_OF_VALOR = not IsClassic and EJ_GetInstanceInfo(861) or XPERL_LOC_ZONE_TRIAL_OF_VALOR
-local XPERL_LOC_ZONE_ULDUAR = not IsClassic and EJ_GetInstanceInfo(759) or XPERL_LOC_ZONE_ULDUAR
+local XPERL_LOC_ZONE_ANTORUS = XPERL_LOC_ZONE_ANTORUS
+local XPERL_LOC_ZONE_BARADIN_HOLD = XPERL_LOC_ZONE_BARADIN_HOLD
+local XPERL_LOC_ZONE_BASTION_OF_TWILIGHT = XPERL_LOC_ZONE_BASTION_OF_TWILIGHT
+local XPERL_LOC_ZONE_BLACK_TEMPLE = XPERL_LOC_ZONE_BLACK_TEMPLE
+local XPERL_LOC_ZONE_BLACKWING_DECENT = XPERL_LOC_ZONE_BLACKWING_DECENT
+local XPERL_LOC_ZONE_DRAGONSOUL = XPERL_LOC_ZONE_DRAGONSOUL
+local XPERL_LOC_ZONE_EMERALD_NIGHTMARE = XPERL_LOC_ZONE_EMERALD_NIGHTMARE
+local XPERL_LOC_ZONE_EYE_OF_ETERNITY = XPERL_LOC_ZONE_EYE_OF_ETERNITY
+local XPERL_LOC_ZONE_FIRELANDS = XPERL_LOC_ZONE_FIRELANDS
+local XPERL_LOC_ZONE_HYJAL_SUMMIT = XPERL_LOC_ZONE_HYJAL_SUMMIT
+local XPERL_LOC_ZONE_ICECROWN_CITADEL = XPERL_LOC_ZONE_ICECROWN_CITADEL
+local XPERL_LOC_ZONE_KARAZHAN = XPERL_LOC_ZONE_KARAZHAN
+local XPERL_LOC_ZONE_NAXXRAMAS = XPERL_LOC_ZONE_NAXXRAMAS
+local XPERL_LOC_ZONE_NIGHTHOLD = XPERL_LOC_ZONE_NIGHTHOLD
+local XPERL_LOC_ZONE_OBSIDIAN_SANCTUM = XPERL_LOC_ZONE_OBSIDIAN_SANCTUM
+local XPERL_LOC_ZONE_RUBY_SANCTUM = XPERL_LOC_ZONE_RUBY_SANCTUM
+local XPERL_LOC_ZONE_SERPENTSHRINE_CAVERN = XPERL_LOC_ZONE_SERPENTSHRINE_CAVERN
+local XPERL_LOC_ZONE_SUNWELL_PLATEAU = XPERL_LOC_ZONE_SUNWELL_PLATEAU
+local XPERL_LOC_ZONE_THRONE_OF_FOUR_WINDS = XPERL_LOC_ZONE_THRONE_OF_FOUR_WINDS
+local XPERL_LOC_ZONE_TOMB_OF_SARGERAS = XPERL_LOC_ZONE_TOMB_OF_SARGERAS
+local XPERL_LOC_ZONE_TRIAL_OF_THE_CRUSADER = XPERL_LOC_ZONE_TRIAL_OF_THE_CRUSADER
+local XPERL_LOC_ZONE_TRIAL_OF_VALOR = XPERL_LOC_ZONE_TRIAL_OF_VALOR
+local XPERL_LOC_ZONE_ULDUAR = XPERL_LOC_ZONE_ULDUAR
 --[[
 -- Mists of Pandaria Raids
 local XPERL_LOC_ZONE_MOGUSHAN_VAULTS = EJ_GetInstanceInfo(317)
@@ -386,7 +386,7 @@ end
 
 -- CustomHighlight:PLAYER_ENTERING_WORLD
 function CustomHighlight:PLAYER_ENTERING_WORLD()
-	if conf.enable and rconf.enable then
+	if conf and conf.enable and rconf.enable then
 		self:RegisterEvent("UNIT_AURA")
 		self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 		--self:RegisterEvent("MINIMAP_ZONE_CHANGED")
@@ -429,7 +429,7 @@ CustomHighlight.ZONE_CHANGED_NEW_AREA = CustomHighlight.PLAYER_ENTERING_WORLD
 
 -- CustomHighlight:UpdateRoster
 function CustomHighlight:UpdateUnits()
-	if not conf.enable or not rconf.enable then
+	if not conf or not conf.enable or not rconf.enable then
 		return
 	end
 
@@ -539,7 +539,7 @@ end
 
 -- CustomHighlight:Check
 function CustomHighlight:Check(frame, unit)
-	if not conf.enable or not rconf.enable then
+	if not conf or not conf.enable or not rconf.enable then
 		return
 	end
 
@@ -556,16 +556,7 @@ function CustomHighlight:Check(frame, unit)
 		end
 
 		for i = 1, 40 do
-			local name, icon
-			if not IsVanillaClassic and C_UnitAuras then
-				local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, "HARMFUL")
-				if auraData then
-					name = auraData.name
-					icon = auraData.icon
-				end
-			else
-				name, icon = UnitAura(unit, i, "HARMFUL")
-			end
+			local name, icon = UnitAura(unit, i, "HARMFUL")
 			if not name then
 				break
 			end

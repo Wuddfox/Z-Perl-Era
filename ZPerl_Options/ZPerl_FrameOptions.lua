@@ -4,11 +4,6 @@
 
 XPerl_SetModuleRevision("$Revision:  $")
 
-local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local IsPandaClassic = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
-local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-
 local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
 local CLASS_COUNT = 0
 for k, v in pairs(LOCALIZED_CLASS_NAMES_MALE) do
@@ -21,49 +16,17 @@ local protected = { }
 
 -- DefaultRaidClasses
 local function DefaultRaidClasses()
-	if IsRetail then
-		return {
-			{enable = true, name = "WARRIOR"},
-			{enable = true, name = "DEATHKNIGHT"},
-			{enable = true, name = "ROGUE"},
-			{enable = true, name = "HUNTER"},
-			{enable = true, name = "MAGE"},
-			{enable = true, name = "WARLOCK"},
-			{enable = true, name = "PRIEST"},
-			{enable = true, name = "DRUID"},
-			{enable = true, name = "SHAMAN"},
-			{enable = true, name = "PALADIN"},
-			{enable = true, name = "MONK"},
-			{enable = true, name = "DEMONHUNTER"},
-			{enable = true, name = "EVOKER"}
-		}
-	elseif IsPandaClassic then
-		return {
-			{enable = true, name = "WARRIOR"},
-			{enable = true, name = "DEATHKNIGHT"},
-			{enable = true, name = "ROGUE"},
-			{enable = true, name = "HUNTER"},
-			{enable = true, name = "MAGE"},
-			{enable = true, name = "WARLOCK"},
-			{enable = true, name = "PRIEST"},
-			{enable = true, name = "DRUID"},
-			{enable = true, name = "SHAMAN"},
-			{enable = true, name = "PALADIN"},
-			{enable = true, name = "MONK"},
-		}
-	else
-		return {
-			{enable = true, name = "WARRIOR"},
-			{enable = true, name = "ROGUE"},
-			{enable = true, name = "HUNTER"},
-			{enable = true, name = "MAGE"},
-			{enable = true, name = "WARLOCK"},
-			{enable = true, name = "PRIEST"},
-			{enable = true, name = "DRUID"},
-			{enable = true, name = "SHAMAN"},
-			{enable = true, name = "PALADIN"},
-		}
-	end
+	return {
+		{enable = true, name = "WARRIOR"},
+		{enable = true, name = "ROGUE"},
+		{enable = true, name = "HUNTER"},
+		{enable = true, name = "MAGE"},
+		{enable = true, name = "WARLOCK"},
+		{enable = true, name = "PRIEST"},
+		{enable = true, name = "DRUID"},
+		{enable = true, name = "SHAMAN"},
+		{enable = true, name = "PALADIN"},
+	}
 end
 
 -- ValidateClassNames
@@ -73,14 +36,7 @@ local function ValidateClassNames(part)
 	end
 	-- This should never happen, but I'm sure someone will find a way to break it
 
-	local list
-	if IsRetail then
-		list = {WARRIOR = false, MAGE = false, ROGUE = false, DRUID = false, HUNTER = false, SHAMAN = false, PRIEST = false, WARLOCK = false, PALADIN = false, DEATHKNIGHT = false, MONK = false, DEMONHUNTER = false, EVOKER = false}
-	elseif IsPandaClassic then
-		list = {WARRIOR = false, MAGE = false, ROGUE = false, DRUID = false, HUNTER = false, SHAMAN = false, PRIEST = false, WARLOCK = false, PALADIN = false, DEATHKNIGHT = false, MONK = false}
-	else
-		list = {WARRIOR = false, MAGE = false, ROGUE = false, DRUID = false, HUNTER = false, SHAMAN = false, PRIEST = false, WARLOCK = false, PALADIN = false}
-	end
+	local list = {WARRIOR = false, MAGE = false, ROGUE = false, DRUID = false, HUNTER = false, SHAMAN = false, PRIEST = false, WARLOCK = false, PALADIN = false}
 	local valid
 	if (part.class) then
 		local classCount = 0
@@ -1076,14 +1032,10 @@ function XPerl_Options_DoRangeTooltip(self)
 	if spell then
 		local link = (C_Spell and C_Spell.GetSpellLink) and C_Spell.GetSpellLink(spell) or (GetSpellLink and GetSpellLink(spell))
 		if link then
-			if IsClassic then
-				local _, _, _, _, _, _, spellID = GetSpellInfo(spell)
-				if spellID then
-					local newLink = format("spell:%d:0:0:0", spellID)
-					GameTooltip:SetHyperlink(newLink)
-				end
-			else
-				GameTooltip:SetHyperlink(link)
+			local _, _, _, _, _, _, spellID = GetSpellInfo(spell)
+			if spellID then
+				local newLink = format("spell:%d:0:0:0", spellID)
+				GameTooltip:SetHyperlink(newLink)
 			end
 		else
 			GameTooltip:SetText(spell or UNKNOWN, 1, 1, 1)
@@ -1135,14 +1087,10 @@ function XPerl_Options_DoRangeTooltipEnemy(self)
 	if spell then
 		local link = (C_Spell and C_Spell.GetSpellLink) and C_Spell.GetSpellLink(spell) or (GetSpellLink and GetSpellLink(spell))
 		if link then
-			if IsClassic then
-				local _, _, _, _, _, _, spellID = GetSpellInfo(spell)
-				if spellID then
-					local newLink = format("spell:%d:0:0:0", spellID)
-					GameTooltip:SetHyperlink(newLink)
-				end
-			else
-				GameTooltip:SetHyperlink(link)
+			local _, _, _, _, _, _, spellID = GetSpellInfo(spell)
+			if spellID then
+				local newLink = format("spell:%d:0:0:0", spellID)
+				GameTooltip:SetHyperlink(newLink)
 			end
 		else
 			GameTooltip:SetText(spell or UNKNOWN, 1, 1, 1)
@@ -1766,7 +1714,6 @@ function XPerl_Options_ImportOldConfig(old)
 				healthFull	= old.ColourHealthFull		or {r = 0, g = 1, b = 0},
 				absorb		= {r = 0.14, g = 0.33, b = 0.7, a = 0.7},
 				healprediction = {r = 0, g = 1, b = 1, a = 1},
-				hot			= {r = 1, g = 0.72, b = 0.1, a = 0.7},
 				mana		= old.ColourMana		or {r = 0, g = 0, b = 1},
 				energy		= old.ColourEnergy		or {r = 1, g = 1, b = 0},
 				rage		= old.ColourRage		or {r = 1, g = 0, b = 0},
@@ -1787,7 +1734,7 @@ function XPerl_Options_ImportOldConfig(old)
 		minimap = {
 			enable		= Convert(old.MinimapButtonShown),
 			pos		= old.MinimapButtonPosition	or 186,
-			radius = IsRetail and 101 or 78,
+			radius = 78,
 		},
 		combatFlash		= Convert(old.PerlCombatFlash),
 		highlightDebuffs = {
@@ -2294,7 +2241,7 @@ local function XPerl_Global_ConfigDefault(default)
 
 	default.minimap = {
 		pos		= 186,
-		radius = IsRetail and 101 or 78,
+		radius = 78,
 		enable		= 1,
 	}
 
@@ -2383,7 +2330,6 @@ local function XPerl_Target_ConfigDefault(default, section)
 		mobType			= 1,
 		level			= 1,
 		healprediction	= 1,
-		hotPrediction	= 1,
 		absorbs			= 1,
 		elite			= 1,
 --		eliteGfx		= nil,
@@ -2455,7 +2401,6 @@ local function XPerl_Party_ConfigDefault(default)
 		level			= 1,
 		healprediction	= 1,
 		absorbs			= 1,
-		hotPrediction	= 1,
 		name			= 1,
 		values			= 1,
 		percent			= 1,
@@ -2529,7 +2474,6 @@ local function XPerl_Player_ConfigDefault(default)
 		level			= 1,
 		healprediction	= 1,
 		absorbs			= 1,
-		hotPrediction	= 1,
 		classIcon		= 1,
 --		xpBar			= nil,
 --		repBar			= nil,
@@ -2594,7 +2538,6 @@ local function XPerl_Pet_ConfigDefault(default)
 		level = 1,
 		healprediction = 1,
 		absorbs = 1,
-		hotPrediction = 1,
 		scale = 0.7,
 		name = 1,
 		buffs = {
@@ -2646,7 +2589,6 @@ local function XPerl_TargetTarget_ConfigDefault(default, section)
 --		level			= nil,
 		healprediction	= 1,
 		absorbs			= 1,
-		hotPrediction	= 1,
 		mana			= 1,
 		size = {
 			width		= 0,
@@ -2688,7 +2630,6 @@ local function XPerl_Raid_ConfigDefault(default)
 		precisionPercent = 1,
 		healprediction	= 1,
 		absorbs			= 1,
-		hotPrediction	= 1,
 		mana			= 1,
 		manaPercent		= 1,
 		precisionManaPercent = 1,
@@ -2769,7 +2710,6 @@ function XPerl_DefaultBarColours()
 		healthFull	= {r = 0, g = 1, b = 0},
 		absorb		= {r = 0.14, g = 0.33, b = 0.7, a = 0.7},
 		healprediction = {r = 0, g = 1, b = 1, a = 1},
-		hot			= {r = 1, g = 0.72, b = 0.1, a = 0.7},
 		mana		= {r = 0, g = 0, b = 1},
 		energy		= {r = 1, g = 1, b = 0},
 		rage		= {r = 1, g = 0, b = 0},
@@ -3036,7 +2976,7 @@ end
 
 -- customOnUpdate
 local ICON_STEP_SIZE	= 500
-local ICON_STOP_SCAN	= IsClassic and 33000 or 310000
+local ICON_STOP_SCAN	= 33000
 local function customOnUpdate(self, elapsed)
 	local db = self.iconDB
 	local ind = self.iconIndex
@@ -3193,14 +3133,10 @@ function XPerl_Options_Custom_ScanForIcons(self)
 							name = GetSpellInfo(self.spellid)
 						end
 						if link then
-							if IsClassic then
-								local _, _, _, _, _, _, spellID = GetSpellInfo(self.spellid)
-								if spellID then
-									local newLink = format("spell:%d:0:0:0", spellID)
-									GameTooltip:SetHyperlink(newLink)
-								end
-							else
-								GameTooltip:SetHyperlink(link)
+							local _, _, _, _, _, _, spellID = GetSpellInfo(self.spellid)
+							if spellID then
+								local newLink = format("spell:%d:0:0:0", spellID)
+								GameTooltip:SetHyperlink(newLink)
 							end
 						else
 							GameTooltip:SetText(name, 1, 1, 1)
@@ -3369,10 +3305,6 @@ if (XPerl_UpgradeSettings) then
 				old.colour.bar.healprediction = {r = 0, g = 1, b = 1, a = 1}
 			end
 
-			if (not old.colour.bar.hot or old.colour.bar.hot[1]) then
-				old.colour.bar.hot = {r = 1, g = 0.72, b = 0.1, a = 0.7}
-			end
-
 			if (not old.colour.bar.runic_power or old.colour.bar.runic_power[1]) then
 				if (PowerBarColor) then
 					old.colour.bar.runic_power = {r = PowerBarColor["RUNIC_POWER"].r, g = PowerBarColor["RUNIC_POWER"].g, b = PowerBarColor["RUNIC_POWER"].b}
@@ -3467,7 +3399,6 @@ if (XPerl_UpgradeSettings) then
 
 			if (oldVersion < "2.4.2c") then
 				old.highlight.sparkles = 1
-				old.highlight.POM = old.highlight.HOT
 			end
 
 			if (oldVersion <= "2.4.2") then
@@ -3681,27 +3612,10 @@ if (XPerl_UpgradeSettings) then
 			end
 
 			if (oldVersion < "7.0.0") then
-				if IsRetail then
-					old.minimap.radius = 101
-				else
-					old.minimap.radius = 78
-				end
+				old.minimap.radius = 78
 			end
 
 			if (oldVersion < "7.0.3") then
-				old.colour.bar.hot = { }
-				old.colour.bar.hot.r = 1
-				old.colour.bar.hot.g = 0.72
-				old.colour.bar.hot.b = 0.1
-				old.colour.bar.hot.a = 0.7
-				old.player.hotPrediction = 1
-				old.pet.hotPrediction = 1
-				old.target.hotPrediction = 1
-				old.targettarget.hotPrediction = 1
-				old.focus.hotPrediction = 1
-				old.focustarget.hotPrediction = 1
-				old.party.hotPrediction = 1
-				old.raid.hotPrediction = 1
 				old.raid.disableDefault = 1
 				old.raid.role = nil
 			end

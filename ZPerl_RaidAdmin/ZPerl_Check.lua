@@ -10,9 +10,6 @@ end
 
 ZPerl_CheckItems = {}
 
-local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local IsPandaClassic = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
-
 -- Upvalues
 local _G = _G
 local floor = floor
@@ -88,13 +85,6 @@ function XPerl_CheckOnLoad(self)
 
 	XPerl_CheckListItemsScrollBar.offset = 0
 	XPerl_CheckListPlayersScrollBar.offset = 0
-
-	if IsRetail then
-		XPerl_CheckTitleBarClose:SetScale(0.66)
-		XPerl_CheckTitleBarClose:SetPoint("TOPRIGHT", 2, 2)
-		XPerl_CheckTitleBarPin:SetPoint("RIGHT", XPerl_CheckTitleBarClose, "LEFT", 0, 0)
-		XPerl_CheckTitleBarLockOpen:SetPoint("RIGHT", XPerl_CheckTitleBarPin, "LEFT", 0, 0)
-	end
 
 	if (XPerl_RegisterPerlFrames) then
 		XPerl_RegisterPerlFrames(self)
@@ -1966,7 +1956,7 @@ function XPerl_Check_ActiveScan()
 				myScan.changed = nil
 			end
 			any = true
-			if (IsPandaClassic and not InCombatLockdown() and CheckInteractDistance(unit, 1)) then		-- Checks to see if in inspect range
+			if (not InCombatLockdown() and CheckInteractDistance(unit, 1)) then		-- Checks to see if in inspect range
 				local eq
 				if (type(ActiveScanItem.slot) == "table") then
 					for k,v in pairs(ActiveScanItem.slot) do

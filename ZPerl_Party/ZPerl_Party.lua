@@ -17,11 +17,6 @@ end, "$Revision:  $")
 
 local percD = "%d"..PERCENT_SYMBOL
 
-local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local IsPandaClassic = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-
 local ceil = ceil
 local floor = floor
 local format = format
@@ -42,7 +37,6 @@ local GetRaidRosterInfo = GetRaidRosterInfo
 local GetSpellInfo = GetSpellInfo
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
-local IsInInstance = IsInInstance
 local IsInRaid = IsInRaid
 local RegisterUnitWatch = RegisterUnitWatch
 local UnitAffectingCombat = UnitAffectingCombat
@@ -112,7 +106,7 @@ function XPerl_Party_Events_OnLoad(self)
 		"UNIT_ABSORB_AMOUNT_CHANGED",
 		"UNIT_POWER_FREQUENT",
 		"UNIT_MAXPOWER",
-		IsClassic and "UNIT_HEALTH_FREQUENT" or "UNIT_HEALTH",
+		"UNIT_HEALTH_FREQUENT",
 		"UNIT_MAXHEALTH",
 		"UNIT_LEVEL",
 		"UNIT_DISPLAYPOWER",
@@ -394,17 +388,6 @@ local function XPerl_Party_UpdateAbsorbPrediction(self)
 		self.statsFrame.expectedAbsorbs:Hide()
 	end
 end
--- XPerl_Party_UpdateHotsPrediction
-local function XPerl_Party_UpdateHotsPrediction(self)
-	if not IsPandaClassic then
-		return
-	end
-	if pconf.hotPrediction then
-		XPerl_SetExpectedHots(self)
-	else
-		self.statsFrame.expectedHots:Hide()
-	end
-end
 
 local function XPerl_Party_UpdateResurrectionStatus(self)
 	if UnitHasIncomingResurrection(self.partyid) then
@@ -439,7 +422,6 @@ local function XPerl_Party_UpdateHealth(self)
 
 	XPerl_Party_UpdateAbsorbPrediction(self)
 	XPerl_Party_UpdateHealPrediction(self)
-	XPerl_Party_UpdateHotsPrediction(self)
 	XPerl_Party_UpdateResurrectionStatus(self)
 
 	if (not UnitIsConnected(partyid)) then
@@ -718,14 +700,7 @@ local function UpdateAssignedRoles(self)
 	local unit = self.partyid
 	local icon = self.nameFrame.roleIcon
 	local isTank, isHealer, isDamage
-	local inInstance, instanceType = IsInInstance()
-	if not IsVanillaClassic and instanceType == "party" then
-		-- No point getting it otherwise, as they can be wrong. Usually the values you had
-		-- from previous instance if you're running more than one with the same people
-
-		-- According to http://forums.worldofwarcraft.com/thread.html?topicId=26560499864
-		-- this is the new way to check for roles
-		-- Port this from XPerl_Player.lua by PlayerLin
+	if type(UnitGroupRolesAssigned) == "function" then
 		local role = UnitGroupRolesAssigned(unit)
 		isTank = false
 		isHealer = false
@@ -790,7 +765,7 @@ end
 -- UpdatePhaseIndicators
 local function UpdatePhasingDisplays(self)
 	local unit = self.partyid
-	local inPhase = not IsClassic and UnitPhaseReason(unit)
+	local inPhase = type(UnitPhaseReason) == "function" and UnitPhaseReason(unit)
 
 	if ( not inPhase or not UnitExists(unit) or not UnitIsConnected(unit)) then
 		self.phasingIcon:Hide()
@@ -835,7 +810,7 @@ local function XPerl_Party_UpdatePVP(self)
 	elseif pconf.pvpIcon and factionGroup and factionGroup ~= "Neutral" and UnitIsPVP(partyid) then
 		pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup)
 
-		if not IsClassic and UnitIsMercenary(partyid) then
+		if type(UnitIsMercenary) == "function" and UnitIsMercenary(partyid) then
 			if factionGroup == "Horde" then
 				pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance")
 			elseif factionGroup == "Alliance" then
@@ -867,7 +842,7 @@ local function XPerl_Party_UpdateCombat(self)
 			self.nameFrame.combatIcon:Hide()
 		end
 
-		if UnitIsCharmed(partyid) and UnitIsPlayer(partyid) and (not IsClassic and (self.ownerid and not UnitUsingVehicle(self.ownerid)) or true) then
+		if UnitIsCharmed(partyid) and UnitIsPlayer(partyid) then
 			self.nameFrame.warningIcon:Show()
 		else
 			self.nameFrame.warningIcon:Hide()
@@ -1005,20 +980,8 @@ local function CheckRaid()
 		local singleGroup = XPerl_Party_SingleGroup()
 
 		if (not pconf or ((pconf.inRaid and IsInRaid()) or (pconf.smallRaid and singleGroup) or (GetNumGroupMembers() > 0 and not IsInRaid()))) then -- or GetNumGroupMembers() > 0
-			if not IsClassic then
-				if not C_PetBattles.IsInBattle() then
-					if (not partyHeader:IsShown()) then
-						partyHeader:Show()
-					end
-				else
-					if (partyHeader:IsShown()) then
-						partyHeader:Hide()
-					end
-				end
-			else
-				if (not partyHeader:IsShown()) then
-					partyHeader:Show()
-				end
+			if (not partyHeader:IsShown()) then
+				partyHeader:Show()
 			end
 		else
 			if (partyHeader:IsShown()) then
@@ -1050,7 +1013,7 @@ end
 local function XPerl_Party_TargetUpdateHealth(self)
 	local tf = self.targetFrame
 	local targetid = self.targetid
-	local hp, hpMax, heal, absorb = UnitIsGhost(targetid) and 1 or (UnitIsDead(targetid) and 0 or UnitHealth(targetid)), UnitHealthMax(targetid), not IsVanillaClassic and UnitGetIncomingHeals(targetid), not IsClassic and UnitGetTotalAbsorbs(targetid)
+	local hp, hpMax, heal, absorb = UnitIsGhost(targetid) and 1 or (UnitIsDead(targetid) and 0 or UnitHealth(targetid)), UnitHealthMax(targetid), false, false
 	tf.lastHP, tf.lastHPMax, tf.lastHeal, tf.lastAbsorb = hp, hpMax, heal, absorb
 	tf.lastUpdate = GetTime()
 
@@ -1163,7 +1126,7 @@ function XPerl_Party_OnUpdate(self, elapsed)
 		end
 
 		if (pconf.target.large and self.targetFrame:IsShown()) then
-			local hp, hpMax, heal, absorb = UnitIsGhost(targetid) and 1 or (UnitIsDead(targetid) and 0 or UnitHealth(targetid)), UnitHealthMax(targetid), not IsVanillaClassic and UnitGetIncomingHeals(targetid), not IsClassic and UnitGetTotalAbsorbs(targetid)
+			local hp, hpMax, heal, absorb = UnitIsGhost(targetid) and 1 or (UnitIsDead(targetid) and 0 or UnitHealth(targetid)), UnitHealthMax(targetid), false, false
 			if (hp ~= self.targetFrame.lastHP or hpMax ~= self.targetFrame.lastHPMax or heal ~= self.targetFrame.lastHeal or absorb ~= self.targetFrame.lastAbsorb or GetTime() > self.targetFrame.lastUpdate + 5000) then
 				XPerl_Party_TargetUpdateHealth(self)
 			end
@@ -1563,12 +1526,6 @@ end
 function XPerl_Party_Events:UNIT_HEAL_PREDICTION(unit)
 	if pconf.healprediction and unit == self.partyid then
 		XPerl_SetExpectedHealth(self)
-	end
-	if not IsPandaClassic then
-		return
-	end
-	if pconf.hotPrediction and unit == self.partyid then
-		XPerl_SetExpectedHots(self)
 	end
 end
 

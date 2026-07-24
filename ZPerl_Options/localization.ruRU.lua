@@ -307,13 +307,6 @@ if GetLocale() == "ruRU" then
 	XPERL_CONF_PLAYER_WRAPBUFFS_DESC				= "Перенос в новый ряд бафов которые превышают ширину фрейма"
 	XPERL_CONF_PLAYER_BUFF_ROWS						= "Ряды бафов"
 	XPERL_CONF_PLAYER_BUFF_ROWS_DESC				= "Регулировать максимальное количество отображения рядов бафов и дебафов"
-	XPERL_CONF_PLAYER_TOTEMS						= "Фрейм Тотема"
-	XPERL_CONF_PLAYER_TOTEMS_ENABLE					= "Включить"
-	XPERL_CONF_PLAYER_TOTEMS_ENABLE_DESC			= "Перехватить близзардский фрейм тотемов"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETX					= "Cмещение по горизонтали"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETX_DESC			= "Регулировать расположение по горизонтали"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETY					= "Cмещение по вертикали"
-	XPERL_CONF_PLAYER_TOTEM_OFFSETY_DESC			= "Регулировать расположение по вертикали"
 
 	XPERL_CONF_TARGET_PORTRAIT						= "Портрет цели"
 	XPERL_CONF_TARGET_PORTRAIT_DESC					= "Включает отображение портретов цели"
@@ -755,9 +748,6 @@ if GetLocale() == "ruRU" then
 	XPERL_CONF_RAID_HIGHLIGHTS_HOTCOUNT_DESC	= "Будет отображать на объекта сколько активных исцелений за время весит на нём"
 	XPERL_CONF_RAID_HIGHLIGHTS_TARGET		= "Моя цель"
 	XPERL_CONF_RAID_HIGHLIGHTS_TARGET_DESC	= "Показывать вашу цель в группе и в рейд фреймах"
-	if not IsClassic then
-		XPERL_CONF_RAID_HIGHLIGHTS_MENDING_DESC	= "Включить отслеживание Молитвы восстановления. Вмести с включенным сверканием, будет отображаться хорошей графикой для облегчения слежение за баффом."
-	end
 	XPERL_CONF_RAID_HIGHLIGHTS_SPARKLES		= "Сверкание"
 	XPERL_CONF_RAID_HIGHLIGHTS_SPARKLES_DESC= "Используйте новый вид сверкания для большей удобности и отчетливого выделения. Отключите старый стиль окраски краёв."
 	XPERL_CONF_RAID_HIGHLIGHTS_EXTRA		= "Доб сверкание"
@@ -995,8 +985,6 @@ if GetLocale() == "ruRU" then
 	XPERL_CONF_MONITOR_ROGUE_DESC			= "Показывать разбойников в мониторинге рейда"
 	XPERL_CONF_MONITOR_WARRIOR				= "Показ Войнов"
 	XPERL_CONF_MONITOR_WARRIOR_DESC			= "Показывать войнов в мониторинге рейда"
-	XPERL_CONF_MONITOR_DEATHKNIGHT			= "Показ Рыцарей смерти"
-	XPERL_CONF_MONITOR_DEATHKNIGHT_DESC		= "Показывать рыцарей смерти в мониторинге рейда"
 
 	XPERL_CONF_MONITOR_LOWMANA				= "Мало маны"
 	XPERL_CONF_MONITOR_LOWMANA_DESC			= "Установить уровень значения уменьшения маны"

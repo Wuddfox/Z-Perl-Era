@@ -17,10 +17,6 @@ local function d(fmt, ...)
 end
 --@end-debug@]===]
 
-local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-
 local DebuffTypeColor = DebuffTypeColor or {
 	none    = { r = 0.80, g = 0.00, b = 0.00 },
 	Magic   = { r = 0.20, g = 0.60, b = 1.00 },
@@ -92,7 +88,7 @@ function XPerl_Player_Buffs_Position(self)
 			local _, playerClass = UnitClass("player")
 			local extraBar
 
-			if (playerClass == "DRUID" and UnitPowerType(self.partyid) > 0 and not pconf.noDruidBar) or (playerClass == "SHAMAN" and not IsClassic and GetSpecialization() == 1 and GetShapeshiftForm() == 0 and not pconf.noDruidBar) or (playerClass == "PRIEST" and UnitPowerType(self.partyid) > 0 and not pconf.noDruidBar) then
+			if (playerClass == "DRUID" and UnitPowerType(self.partyid) > 0 and not pconf.noDruidBar) or (playerClass == "PRIEST" and UnitPowerType(self.partyid) > 0 and not pconf.noDruidBar) then
 				extraBar = 1
 			else
 				extraBar = 0
@@ -150,7 +146,7 @@ function XPerl_Player_BuffSetup(self)
 
 	if (self.buffFrame) then
 		if pconf.buffs.enable then
-			setCommon(self.buffFrame, "HELPFUL", IsRetail and "XPerl_Secure_BuffTemplate" or (C_CVar.GetCVar("ActionButtonUseKeyDown") == "1" and "XPerl_Secure_Classic_Down_BuffTemplate" or "XPerl_Secure_Classic_BuffTemplate"))
+			setCommon(self.buffFrame, "HELPFUL", (C_CVar.GetCVar("ActionButtonUseKeyDown") == "1" and "XPerl_Secure_Classic_Down_BuffTemplate" or "XPerl_Secure_Classic_BuffTemplate"))
 			self.buffFrame:Show()
 		else
 			self.buffFrame:Hide()
@@ -159,7 +155,7 @@ function XPerl_Player_BuffSetup(self)
 
 	if (self.debuffFrame) then
 		if pconf.buffs.enable and pconf.debuffs.enable then
-			setCommon(self.debuffFrame, "HARMFUL", IsRetail and "XPerl_Secure_BuffTemplate" or (C_CVar.GetCVar("ActionButtonUseKeyDown") == "1" and "XPerl_Secure_Classic_Down_BuffTemplate" or "XPerl_Secure_Classic_BuffTemplate"))
+			setCommon(self.debuffFrame, "HARMFUL", (C_CVar.GetCVar("ActionButtonUseKeyDown") == "1" and "XPerl_Secure_Classic_Down_BuffTemplate" or "XPerl_Secure_Classic_BuffTemplate"))
 			self.debuffFrame:Show()
 		else
 			self.debuffFrame:Hide()
@@ -181,7 +177,7 @@ function XPerl_Player_BuffSetup(self)
 		-- Use the secure attribute driver to keep BuffFrame hidden even during combat,
 		-- preventing game updates (e.g. PLAYER_REGEN_DISABLED) from re-showing it.
 		RegisterAttributeDriver(BuffFrame, "state-visibility", "hide")
-		if not IsRetail and _G.TemporaryEnchantFrame then
+		if _G.TemporaryEnchantFrame then
 			_G.TemporaryEnchantFrame:Hide()
 			RegisterAttributeDriver(_G.TemporaryEnchantFrame, "state-visibility", "hide")
 		end
@@ -189,7 +185,7 @@ function XPerl_Player_BuffSetup(self)
 		UnregisterAttributeDriver(BuffFrame, "state-visibility")
 		BuffFrame:Show()
 		BuffFrame:RegisterEvent("UNIT_AURA")
-		if not IsRetail and _G.TemporaryEnchantFrame then
+		if _G.TemporaryEnchantFrame then
 			UnregisterAttributeDriver(_G.TemporaryEnchantFrame, "state-visibility")
 			_G.TemporaryEnchantFrame:Show()
 		end
@@ -213,7 +209,7 @@ local function XPerl_Player_Buffs_Set_Bits(self)
 	local buffs = self.buffFrame
 	if buffs then
 		if pconf.buffs.enable then
-			setCommon(buffs, "HELPFUL", IsRetail and "XPerl_Secure_BuffTemplate" or (C_CVar.GetCVar("ActionButtonUseKeyDown") == "1" and "XPerl_Secure_Classic_Down_BuffTemplate" or "XPerl_Secure_Classic_BuffTemplate"))
+			setCommon(buffs, "HELPFUL", (C_CVar.GetCVar("ActionButtonUseKeyDown") == "1" and "XPerl_Secure_Classic_Down_BuffTemplate" or "XPerl_Secure_Classic_BuffTemplate"))
 			buffs:Show()
 		else
 			buffs:Hide()
@@ -223,7 +219,7 @@ local function XPerl_Player_Buffs_Set_Bits(self)
 	local debuffs = self.debuffFrame
 	if debuffs then
 		if pconf.buffs.enable and pconf.debuffs.enable then
-			setCommon(debuffs, "HARMFUL", IsRetail and "XPerl_Secure_BuffTemplate" or (C_CVar.GetCVar("ActionButtonUseKeyDown") == "1" and "XPerl_Secure_Classic_Down_BuffTemplate" or "XPerl_Secure_Classic_BuffTemplate"))
+			setCommon(debuffs, "HARMFUL", (C_CVar.GetCVar("ActionButtonUseKeyDown") == "1" and "XPerl_Secure_Classic_Down_BuffTemplate" or "XPerl_Secure_Classic_BuffTemplate"))
 			debuffs:Show()
 		else
 			debuffs:Hide()
@@ -374,20 +370,7 @@ function XPerl_PlayerBuffs_Update(self)
 
 		if filter and unit then
 			local name, icon, applications, dispelName, duration, expirationTime, sourceUnit
-			if not IsVanillaClassic and C_UnitAuras then
-				local auraData = C_UnitAuras.GetAuraDataByIndex(unit, index, filter)
-				if auraData then
-					name = auraData.name
-					icon = auraData.icon
-					applications = auraData.applications
-					dispelName = auraData.dispelName
-					duration = auraData.duration
-					expirationTime = auraData.expirationTime
-					sourceUnit = auraData.sourceUnit
-				end
-			else
-				name, icon, applications, dispelName, duration, expirationTime, sourceUnit = UnitAura(unit, index, filter)
-			end
+			name, icon, applications, dispelName, duration, expirationTime, sourceUnit = UnitAura(unit, index, filter)
 			self.filter = filter
 			self:SetAlpha(1)
 
