@@ -3,8 +3,6 @@
 	Translation Updated by Xgale @20090222
 ]]
 
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-
 if GetLocale() == "zhCN" then
 	-- Tabs
 	XPERL_CONF_TITLE1   = "全局"

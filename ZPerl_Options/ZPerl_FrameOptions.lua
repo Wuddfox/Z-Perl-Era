@@ -14,63 +14,6 @@ end
 
 local protected = { }
 
--- DefaultRaidClasses
-local function DefaultRaidClasses()
-	return {
-		{enable = true, name = "WARRIOR"},
-		{enable = true, name = "ROGUE"},
-		{enable = true, name = "HUNTER"},
-		{enable = true, name = "MAGE"},
-		{enable = true, name = "WARLOCK"},
-		{enable = true, name = "PRIEST"},
-		{enable = true, name = "DRUID"},
-		{enable = true, name = "SHAMAN"},
-		{enable = true, name = "PALADIN"},
-	}
-end
-
--- ValidateClassNames
-local function ValidateClassNames(part)
-	if not part then
-		return
-	end
-	-- This should never happen, but I'm sure someone will find a way to break it
-
-	local list = {WARRIOR = false, MAGE = false, ROGUE = false, DRUID = false, HUNTER = false, SHAMAN = false, PRIEST = false, WARLOCK = false, PALADIN = false}
-	local valid
-	if (part.class) then
-		local classCount = 0
-		for i, info in pairs(part.class) do
-			if (type(info) == "table" and info.name) then
-				classCount = classCount + 1
-			end
-		end
-		if (classCount == CLASS_COUNT) then
-			valid = true
-		end
-
-		if (valid) then
-			for i = 1, CLASS_COUNT do
-				if (part.class[i]) then
-					list[part.class[i].name] = true
-				end
-			end
-		end
-	end
-
-	if (valid) then
-		for k, v in pairs(list) do
-			if (not v) then
-				valid = nil
-			end
-		end
-	end
-
-	if (not valid) then
-		part.class = DefaultRaidClasses(true)
-	end
-end
-
 function XPerl_OptionsFrame_DisableSlider(slider)
 	local name = slider:GetName()
 	getmetatable(slider).__index.Disable(slider)

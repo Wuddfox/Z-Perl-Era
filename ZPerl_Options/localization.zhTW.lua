@@ -2,9 +2,6 @@
 	Localisation file
 ]]
 
-local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local IsPandaClassic = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
-
 if GetLocale() == "zhTW" then
 	-- Tabs
 	XPERL_CONF_TITLE1						= "通用"

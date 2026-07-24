@@ -16,9 +16,6 @@ XPerl_RequestConfig(function(new)
 end, "$Revision:  $")
 
 
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-
 local min = min
 local max = max
 local pairs = pairs
@@ -66,9 +63,7 @@ local function enableToggle(self, value)
 			if (self.unit == "target") then
 				self:RegisterEvent("PLAYER_TARGET_CHANGED")
 			elseif (self.unit == "focus") then
-				if not IsVanillaClassic then
-					self:RegisterEvent("PLAYER_FOCUS_CHANGED")
-				end
+				self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 			elseif (strfind(self.unit, "^party")) then
 				self:RegisterEvent("PARTY_MEMBER_ENABLE")
 				self:RegisterEvent("PARTY_MEMBER_DISABLE")

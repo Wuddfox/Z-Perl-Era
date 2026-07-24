@@ -13,10 +13,6 @@ end, "$Revision:  $")
 
 --local new, del, copy = XPerl_GetReusableTable, XPerl_FreeTable, XPerl_CopyTable
 
-local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-
 local pairs = pairs
 local strfind = strfind
 
@@ -220,35 +216,32 @@ local function XPerl_RaidPets_OnUpdate(self, elapsed)
 		end
 	end
 
-	if IsClassic then
-		local newGuid = UnitGUID(partyid)
-		local newName = UnitName(partyid)
-		local newHP = UnitIsGhost(partyid) and 1 or (UnitIsDead(partyid) and 0 or XPerl_Unit_GetHealth(self))
-		local newHPMax = UnitHealthMax(partyid)
+	local newGuid = UnitGUID(partyid)
+	local newName = UnitName(partyid)
+	local newHP = UnitIsGhost(partyid) and 1 or (UnitIsDead(partyid) and 0 or XPerl_Unit_GetHealth(self))
+	local newHPMax = UnitHealthMax(partyid)
 
-		if (newGuid ~= self.petGUID) then
-			XPerl_RaidPets_UpdateDisplay(self)
-			return
-		else
-			self.time = elapsed + (self.time or 0)
-			if self.time >= 0.5 then
-				if conf.highlightDebuffs.enable then
-					XPerl_CheckDebuffs(self, partyid)
-				end
-				--XPerl_Highlight:SetHighlight(self, UnitGUID(partyid))
-				self.time = 0
+	if (newGuid ~= self.petGUID) then
+		XPerl_RaidPets_UpdateDisplay(self)
+		return
+	else
+		self.time = elapsed + (self.time or 0)
+		if self.time >= 0.5 then
+			if conf.highlightDebuffs.enable then
+				XPerl_CheckDebuffs(self, partyid)
 			end
+			--XPerl_Highlight:SetHighlight(self, UnitGUID(partyid))
+			self.time = 0
 		end
+	end
 
-		if newName ~= self.petName then
-			XPerl_RaidPet_UpdateGUIDs()
-			XPerl_RaidPets_UpdateName(self)
-		end
+	if newName ~= self.petName then
+		XPerl_RaidPet_UpdateGUIDs()
+		XPerl_RaidPets_UpdateName(self)
+	end
 
-		if (newHP ~= self.pethp or newHPMax ~= self.pethpmax) then
-			XPerl_RaidPets_UpdateHealth(self)
-		end
-
+	if (newHP ~= self.pethp or newHPMax ~= self.pethpmax) then
+		XPerl_RaidPets_UpdateHealth(self)
 	end
 end
 
@@ -652,24 +645,6 @@ function XPerl_RaidPets_HideShow()
 		end
 	end
 
-	if not IsClassic then
-		local on = ((IsInRaid() and rconf.enable) or (IsInGroup() and XPerl_Raid_GrpPets:GetAttribute("showParty") and rconf.enable))
-		local events = {
-			IsClassic and "UNIT_HEALTH_FREQUENT" or "UNIT_HEALTH",
-			"UNIT_MAXHEALTH",
-			"UNIT_NAME_UPDATE",
-			"UNIT_AURA",
-		}
-
-		for i, event in pairs(events) do
-			if (on) then
-				XPerl_RaidPets_Frame:RegisterEvent(event)
-			else
-				XPerl_RaidPets_Frame:UnregisterEvent(event)
-			end
-		end
-	end
-
 	if (rconf.enable and not singleGroup) then
 		XPerl_Raid_GrpPets:Show()
 		XPerl_RaidPets_Frame:Show()
@@ -730,14 +705,8 @@ function XPerl_RaidPets_Titles()
 end
 
 function XPerl_RaidPets_SetBits1(self)
-	if IsClassic or conf.rangeFinder.enabled then
-		if not self:GetScript("OnUpdate") then
-			self:SetScript("OnUpdate", XPerl_RaidPets_OnUpdate)
-		end
-	else
-		if self:GetScript("OnUpdate") then
-			self:SetScript("OnUpdate", nil)
-		end
+	if not self:GetScript("OnUpdate") then
+		self:SetScript("OnUpdate", XPerl_RaidPets_OnUpdate)
 	end
 end
 

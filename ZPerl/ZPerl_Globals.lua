@@ -698,7 +698,7 @@ function XPerl_UpgradeSettings()
 end
 
 -- DefaultRaidClasses
-local function DefaultRaidClasses()
+function DefaultRaidClasses()
 	return {
 		{enable = true, name = "WARRIOR"},
 		{enable = true, name = "ROGUE"},
@@ -713,7 +713,7 @@ local function DefaultRaidClasses()
 end
 
 -- ValidateClassNames
-local function ValidateClassNames(part)
+function ValidateClassNames(part)
 	if not part then
 		return
 	end

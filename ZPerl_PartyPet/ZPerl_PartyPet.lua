@@ -18,8 +18,6 @@ end, "$Revision:  $")
 
 local AllPetFrames = {}
 
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-
 local UnitExists = UnitExists
 local UnitGUID = UnitGUID
 local UnitHealth = UnitHealth
@@ -42,8 +40,8 @@ function XPerl_Party_Pet_OnLoadEvents(self)
 		"UNIT_FACTION",
 		"UNIT_AURA",
 		"UNIT_FLAGS",
-		IsClassic and "UNIT_HEALTH_FREQUENT" or "UNIT_HEALTH",
-		IsClassic and "UNIT_HEALTH",
+		"UNIT_HEALTH_FREQUENT",
+		"UNIT_HEALTH",
 		"UNIT_MAXHEALTH",
 		"UNIT_PET",
 		"UNIT_NAME_UPDATE",
@@ -447,9 +445,7 @@ function XPerl_Party_Pet_UpdateDisplay(self)
 		return
 	end
 
-	if IsClassic then
-		self.guid = UnitGUID(partyid)
-	end
+	self.guid = UnitGUID(partyid)
 
 	XPerl_Party_Pet_UpdateName(self)
 	XPerl_Party_Pet_UpdateHealth(self)
@@ -521,41 +517,38 @@ local function XPerl_Party_Pet_OnUpdate(self, elapsed)
 		end
 	end
 
-	if IsClassic then
-		local newGuid = UnitGUID(partyid)
-		local newName = UnitName(partyid)
-		local newHP = UnitIsGhost(partyid) and 1 or (UnitIsDead(partyid) and 0 or XPerl_Unit_GetHealth(self))
-		local newHPMax = UnitHealthMax(partyid)
-		local newMana = UnitPower(partyid)
-		local newManaMax = UnitPowerMax(partyid)
+	local newGuid = UnitGUID(partyid)
+	local newName = UnitName(partyid)
+	local newHP = UnitIsGhost(partyid) and 1 or (UnitIsDead(partyid) and 0 or XPerl_Unit_GetHealth(self))
+	local newHPMax = UnitHealthMax(partyid)
+	local newMana = UnitPower(partyid)
+	local newManaMax = UnitPowerMax(partyid)
 
-		if (newGuid ~= self.guid) then
-			XPerl_Party_Pet_UpdateDisplay(self)
-			return
-		else
-			self.time = elapsed + (self.time or 0)
-			if self.time >= 0.5 then
-				if self.conf.buffs.enable then
-					XPerl_Party_Pet_Buff_UpdateAll(self)
-				end
-				--XPerl_Highlight:SetHighlight(self, UnitGUID(partyid))
-				self.time = 0
+	if (newGuid ~= self.guid) then
+		XPerl_Party_Pet_UpdateDisplay(self)
+		return
+	else
+		self.time = elapsed + (self.time or 0)
+		if self.time >= 0.5 then
+			if self.conf.buffs.enable then
+				XPerl_Party_Pet_Buff_UpdateAll(self)
 			end
+			--XPerl_Highlight:SetHighlight(self, UnitGUID(partyid))
+			self.time = 0
 		end
+	end
 
-		if newName ~= self.petName then
-			XPerl_Party_Pet_UpdateGUIDs()
-			XPerl_Party_Pet_UpdateName(self)
-		end
+	if newName ~= self.petName then
+		XPerl_Party_Pet_UpdateGUIDs()
+		XPerl_Party_Pet_UpdateName(self)
+	end
 
-		if (newHP ~= self.pethp or newHPMax ~= self.pethpmax) then
-			XPerl_Party_Pet_UpdateHealth(self)
-		end
+	if (newHP ~= self.pethp or newHPMax ~= self.pethpmax) then
+		XPerl_Party_Pet_UpdateHealth(self)
+	end
 
-		if (newMana ~= self.petmana or newManaMax ~= self.petmanamax) then
-			XPerl_Party_Pet_UpdateMana(self)
-		end
-
+	if (newMana ~= self.petmana or newManaMax ~= self.petmanamax) then
+		XPerl_Party_Pet_UpdateMana(self)
 	end
 end
 
@@ -815,14 +808,8 @@ function XPerl_Party_Pet_Set_Bits1(self)
 		end
 	end
 
-	if IsClassic or conf.combatFlash or conf.rangeFinder.enabled then
-		if not self:GetScript("OnUpdate") then
-			self:SetScript("OnUpdate", XPerl_Party_Pet_OnUpdate)
-		end
-	else
-		if self:GetScript("OnUpdate") then
-			self:SetScript("OnUpdate", nil)
-		end
+	if not self:GetScript("OnUpdate") then
+		self:SetScript("OnUpdate", XPerl_Party_Pet_OnUpdate)
 	end
 
 	XPerl_ProtectedCall(EnableDisable, self)
@@ -853,13 +840,6 @@ function XPerl_Party_Pet_Set_Bits()
 			end
 		end
 	end--]]
-
-	-- Classic gets updated OnUpdate instead of events
-	if not IsClassic then
-		RegisterEvents(XPerl_Party_Pet_EventFrame, petconf.mana, {"UNIT_POWER_FREQUENT", "UNIT_MAXPOWER", "UNIT_MANA", "UNIT_DISPLAYPOWER"})
-		--RegisterEvents(XPerl_Party_Pet_EventFrame, petconf.name, {"UNIT_NAME_UPDATE"})
-		RegisterEvents(XPerl_Party_Pet_EventFrame, petconf.name and petconf.level, {"UNIT_LEVEL"})
-	end
 
 	XPerl_Party_Pet_EventFrame:RegisterEvent("PARTY_MEMBER_ENABLE")
 	XPerl_Party_Pet_EventFrame:RegisterEvent("PARTY_MEMBER_DISABLE")

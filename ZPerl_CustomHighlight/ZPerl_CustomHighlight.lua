@@ -12,9 +12,6 @@ XPerl_RequestConfig(function(new)
 	rconf = new.raid
 end, "$Revision:  $")
 
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-
 local pairs = pairs
 local tinsert = tinsert
 local tremove = tremove

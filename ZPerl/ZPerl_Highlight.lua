@@ -8,12 +8,6 @@ XPerl_RequestConfig(function(new)
 	conf = new
 end, "$Revision:  $")
 
-local _, _, _, clientRevision = GetBuildInfo()
-
-local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-local IsVanillaClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-
 local _G = _G
 
 local bit = bit
@@ -114,86 +108,44 @@ local function getRankAmount(self, spellId)
 	end
 end
 
-local absorbSpells
-if IsRetail then
-	absorbSpells = {
-		-- Shield Barrier
-		--[[[C_Spell.GetSpellInfo(174926) and C_Spell.GetSpellInfo(174926).name] = {
-			ranks = {
-				[174926] = 4459 --level 85 (4459 + $SPFR * 0.807)
-			},
-			school = "PHYSICAL",
-			class = "WARRIOR",
-			GetModifier = getTalentModifier,
-			GetRankAmount = getRankAmount,
+local absorbSpells = {
+	-- Shield Barrier
+	--[[[GetSpellInfo(174926)] = {
+		ranks = {
+			[174926] = 4459 --level 85 (4459 + $SPFR * 0.807)
+		},
+		school = "PHYSICAL",
+		class = "WARRIOR",
+		GetModifier = getTalentModifier,
+		GetRankAmount = getRankAmount,
+	},]]
+	-- Ice Barrier
+	[GetSpellInfo(11426)] = {
+		ranks = {
+			[11426]	= 3686 --level 85 (3686 + $SPFR * 0.807)
+		},
+		school = "FROST",
+		class = "MAGE",
+		GetModifier = getTalentModifier,
+		GetRankAmount = getRankAmount,
+	},
+	-- Power Word: Shield
+	[GetSpellInfo(17)] = {
+		ranks = {
+			[17] = 3906 --level 85 (3906 + ($SP * 0.418))
+		},
+		class = "PRIEST",
+		targetable = true,
+		school = "HOLY",
+		--[[improved = {
+			name = GetSpellInfo(14748),
+			ranks = 2,
+			percentPerRank = 5,
 		},]]
-		-- Ice Barrier
-		[C_Spell.GetSpellInfo(11426) and C_Spell.GetSpellInfo(11426).name] = {
-			ranks = {
-				[11426]	= 3686 --level 85 (3686 + $SPFR * 0.807)
-			},
-			school = "FROST",
-			class = "MAGE",
-			GetModifier = getTalentModifier,
-			GetRankAmount = getRankAmount,
-		},
-		-- Power Word: Shield
-		[C_Spell.GetSpellInfo(17) and C_Spell.GetSpellInfo(17).name] = {
-			ranks = {
-				[17] = 3906 --level 85 (3906 + ($SP * 0.418))
-			},
-			class = "PRIEST",
-			targetable = true,
-			school = "HOLY",
-			--[[improved = {
-				name = C_Spell.GetSpellInfo(14748) and C_Spell.GetSpellInfo(14748).name,
-				ranks = 2,
-				percentPerRank = 5,
-			},]]
-			GetModifier = getTalentModifier,
-			GetRankAmount = getRankAmount,
-		},
-	}
-else
-	absorbSpells = {
-		-- Shield Barrier
-		--[[[GetSpellInfo(174926)] = {
-			ranks = {
-				[174926] = 4459 --level 85 (4459 + $SPFR * 0.807)
-			},
-			school = "PHYSICAL",
-			class = "WARRIOR",
-			GetModifier = getTalentModifier,
-			GetRankAmount = getRankAmount,
-		},]]
-		-- Ice Barrier
-		[GetSpellInfo(11426)] = {
-			ranks = {
-				[11426]	= 3686 --level 85 (3686 + $SPFR * 0.807)
-			},
-			school = "FROST",
-			class = "MAGE",
-			GetModifier = getTalentModifier,
-			GetRankAmount = getRankAmount,
-		},
-		-- Power Word: Shield
-		[GetSpellInfo(17)] = {
-			ranks = {
-				[17] = 3906 --level 85 (3906 + ($SP * 0.418))
-			},
-			class = "PRIEST",
-			targetable = true,
-			school = "HOLY",
-			--[[improved = {
-				name = GetSpellInfo(14748),
-				ranks = 2,
-				percentPerRank = 5,
-			},]]
-			GetModifier = getTalentModifier,
-			GetRankAmount = getRankAmount,
-		},
-	}
-end
+		GetModifier = getTalentModifier,
+		GetRankAmount = getRankAmount,
+	},
+}
 
 local colours = {
 	HOT = {r = 0.2, g = 0.4, b = 0.8, canFlash = true},
@@ -1470,7 +1422,7 @@ function xpHigh:OptionChange()
 		self:ClearAll("SHIELD")
 	end
 
-	if not IsClassic then
+	if type(UnitGetIncomingHeals) == "function" then
 		if (conf.highlight.enable and conf.highlight.HEAL) then
 			events = true
 			self:RegisterEvent("UNIT_HEAL_PREDICTION")

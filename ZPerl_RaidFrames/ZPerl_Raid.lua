@@ -2478,20 +2478,6 @@ local function SetMainHeaderAttributes(self)
 	end
 end
 
-local function DefaultRaidClasses()
-	return {
-		{enable = true, name = "WARRIOR"},
-		{enable = true, name = "ROGUE"},
-		{enable = true, name = "HUNTER"},
-		{enable = true, name = "MAGE"},
-		{enable = true, name = "WARLOCK"},
-		{enable = true, name = "PRIEST"},
-		{enable = true, name = "DRUID"},
-		{enable = true, name = "SHAMAN"},
-		{enable = true, name = "PALADIN"},
-	}
-end
-
 local function GroupFilter(n)
 	if (rconf.sortByClass) then
 		if (not rconf.class[n]) then

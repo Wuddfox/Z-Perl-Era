@@ -3,8 +3,6 @@
 	Translated by Asixandur, Philipxander and Darkvalky
 ]]
 
-local IsClassic = WOW_PROJECT_ID >= WOW_PROJECT_CLASSIC
-
 if GetLocale() == "itIT" then
 	-- Tabs
 	XPERL_CONF_TITLE1                        = "Globali"
