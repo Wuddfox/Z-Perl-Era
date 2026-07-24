@@ -76,15 +76,6 @@ function XPerl_Player_Buffs_Position(self)
 		if (pconf.buffs.above) then
 			self.buffFrame:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 3, 0)
 		else
-			--[[if (self.runes and self.runes:IsShown() and ((self.runes.child and self.runes.child:IsShown()) or (self.runes.child2 and self.runes.child2:IsShown())) and pconf.dockRunes) then
-				self.buffFrame:SetPoint("TOPLEFT", self.portraitFrame, "BOTTOMLEFT", 3, -28)
-			elseif ((pconf.xpBar or pconf.repBar) and not pconf.extendPortrait) then
-				local diff = self.statsFrame:GetBottom() - self.portraitFrame:GetBottom()
-				self.buffFrame:SetPoint("TOPLEFT", self.portraitFrame, "BOTTOMLEFT", 3, diff - 5)
-			else
-				self.buffFrame:SetPoint("TOPLEFT", self.portraitFrame, "BOTTOMLEFT", 3, 0)
-			end]]
-
 			local _, playerClass = UnitClass("player")
 			local extraBar
 
@@ -229,31 +220,8 @@ local function XPerl_Player_Buffs_Set_Bits(self)
 	XPerl_Player_Buffs_Position(self)
 end
 
--- AuraButton_OnUpdate
---[[local function AuraButton_OnUpdate(self, elapsed)
-	if (not self.endTime) then
-		self:SetAlpha(1)
-		self:SetScript("OnUpdate", nil)
-		return
-	end
-	local timeLeft = self.endTime - GetTime()
-	if (timeLeft < _G.BUFF_WARNING_TIME) then
-		self:SetAlpha(XPerl_Player.buffFrame.BuffAlphaValue)
-	else
-		self:SetAlpha(1)
-	end
-end--]]
-
 local function DoEnchant(self, slotID, hasEnchant, expire, charges)
 	if (hasEnchant) then
-		-- Fix to check to see if the player is a shaman and sets the fullDuration to 30 minutes. Shaman weapon enchants are only 30 minutes.
-		--[[if (playerClass == "SHAMAN") then
-			if ((expire / 1000) > 30 * 60) then
-				self.fullDuration = 60 * 60
-			else
-				self.fullDuration = 30 * 60
-			end
-		end]]
 		if (not self.fullDuration) then
 			self.fullDuration = expire - GetTime()
 			if (self.fullDuration > 1 * 60) then
@@ -273,13 +241,6 @@ local function DoEnchant(self, slotID, hasEnchant, expire, charges)
 			local timeEnd = GetTime() + (expire / 1000)
 			local timeStart = timeEnd - self.fullDuration --(30 * 60)
 			XPerl_CooldownFrame_SetTimer(self.cooldown, timeStart, self.fullDuration, 1)
-
-			--[[if (pconf.buffs.flash) then
-				self.endTime = timeEnd
-				self:SetScript("OnUpdate", AuraButton_OnUpdate)
-			else
-				self.endTime = nil
-			end--]]
 		else
 			self.cooldown:Hide()
 			--self.endTime = nil
@@ -313,11 +274,6 @@ function XPerl_PlayerBuffs_OnEvent(self, event, ...)
 		if (unit == "player" or unit == "pet" or unit == "vehicle") then
 			XPerl_PlayerBuffs_Update(self)
 		end
-	--[[elseif (event == "PLAYER_EQUIPMENT_CHANGED") then
-		local slot, hasItem = ...
-		if (slot == 16 or slot == 17) then
-			XPerl_PlayerBuffs_Update(self)
-		end]]
 	end
 end
 
@@ -394,12 +350,6 @@ function XPerl_PlayerBuffs_Update(self)
 			if self.cooldown and (duration or 0) ~= 0 and conf.buffs.cooldown and (sourceUnit or conf.buffs.cooldownAny) then
 				local start = expirationTime - duration
 				XPerl_CooldownFrame_SetTimer(self.cooldown, start, duration, 1, sourceUnit)
-				--[[if (pconf.buffs.flash) then
-					self.endTime = expirationTime
-					self:SetScript("OnUpdate", AuraButton_OnUpdate)
-				else
-					self.endTime = nil
-				end--]]
 			else
 				self.cooldown:Hide()
 				--self.endTime = nil

@@ -16,18 +16,12 @@ local perc1F = "%.1f"..PERCENT_SYMBOL
 local fullyInitiallized
 local SkipHighlightUpdate
 
---local taintFrames = { }
-
 local conf, rconf, cconf
 XPerl_RequestConfig(function(newConf)
 	conf = newConf
 	rconf = conf.raid
 	cconf = conf.custom
 end, "$Revision:  $")
-
---[[if type(RegisterAddonMessagePrefix) == "function" then
-	RegisterAddonMessagePrefix("CTRA")
-end--]]
 
 --[===[@debug@
 local function d(...)
@@ -205,43 +199,6 @@ function XPerl_Raid_OnLoad(self)
 
 	self.Array = { }
 
-	--[[if (rconf.enable) then
-		--CompactRaidFrameManager:SetParent(self)
-		if CompactUnitFrameProfiles then
-			CompactUnitFrameProfiles:UnregisterAllEvents()
-		end
-		if CompactRaidFrameManager then
-			CompactRaidFrameManager:UnregisterAllEvents()
-			CompactRaidFrameContainer:UnregisterAllEvents()
-		end
-	end]]
-
-	--[[if CompactRaidFrameManager then
-		if rconf.enable then
-			local function hideRaid()
-				CompactRaidFrameManager:UnregisterAllEvents()
-				CompactRaidFrameContainer:UnregisterAllEvents()
-				if InCombatLockdown() then
-					return
-				end
-
-				CompactRaidFrameManager:Hide()
-				local shown = CompactRaidFrameManager_GetSetting("IsShown")
-				if shown and shown ~= "0" then
-					CompactRaidFrameManager_SetSetting("IsShown", "0")
-				end
-			end
-
-			hooksecurefunc("CompactRaidFrameManager_UpdateShown", function()
-				hideRaid()
-			end)
-
-			hideRaid()
-			CompactRaidFrameContainer:HookScript("OnShow", hideRaid)
-			CompactRaidFrameManager:HookScript("OnShow", hideRaid)
-		end
-	end]]
-
 	XPerl_RegisterOptionChanger(function()
 		if (raidLoaded) then
 			XPerl_RaidTitles()
@@ -282,23 +239,9 @@ function XPerl_Raid_HeaderOnLoad(self)
 	--XPerl_SavePosition(self, true)
 end
 
--- CreateManaBar
---[[local function CreateManaBar(self)
-	local sf = self.statsFrame
-	sf.manaBar = CreateFrame("StatusBar", sf:GetName().."manaBar", sf, "XPerlRaidStatusBar")
-	sf.manaBar:SetScale(0.7)
-	sf.manaBar:SetWidth(70)
-	sf.manaBar:SetPoint("TOPLEFT", sf.healthBar, "BOTTOMLEFT", 0, 0)
-	sf.manaBar:SetPoint("BOTTOMRIGHT", sf.healthBar, "BOTTOMRIGHT", 0, -7)
-	sf.manaBar:SetStatusBarColor(0, 0, 1)
-end]]
-
 -- Setup1RaidFrame
 local function Setup1RaidFrame(self)
 	if (rconf.mana) then
-		--[[if (not self.statsFrame.manaBar) then
-			CreateManaBar(self)
-		end]]
 		if not InCombatLockdown() then
 			self:SetHeight(43)
 		end
@@ -518,15 +461,6 @@ local function XPerl_Raid_UpdateHealth(self)
 	local health = UnitIsGhost(partyid) and 1 or (UnitIsDead(partyid) and 0 or UnitHealth(partyid))
 	local healthmax = UnitHealthMax(partyid)
 
-	--[[if (health > healthmax) then
-		-- New glitch with 1.12.1
-		if (UnitIsDeadOrGhost(partyid)) then
-			health = 0
-		else
-			health = healthmax
-		end
-	end--]]
-
 	self.statsFrame.healthBar:SetMinMaxValues(0, healthmax)
 	if (conf.bar.inverse) then
 		self.statsFrame.healthBar:SetValue(healthmax - health)
@@ -551,10 +485,6 @@ local function XPerl_Raid_UpdateHealth(self)
 	local myRoster = ZPerl_Roster[name]
 	if (name and UnitIsConnected(partyid)) then
 		--self.disco = nil
-		--[[if (self.feigning and not UnitBuff(partyid, feignDeath)) then
-			self.feigning = nil
-		end]]
-
 		local flags = XPerl_Raid_CheckFlags(partyid)
 		if (flags) then
 			XPerl_Raid_ShowFlags(self, flags)
@@ -564,15 +494,6 @@ local function XPerl_Raid_UpdateHealth(self)
 				XPerl_Raid_UpdateName(self)
 			end
 			return
-		--[[elseif (UnitBuff(partyid, feignDeath) and conf.showFD) then
-			XPerl_NoFadeBars(true)
-			self.statsFrame.healthBar.text:SetText(XPERL_LOC_FEIGNDEATH)
-			self.statsFrame:SetGrey()
-			XPerl_NoFadeBars()
-		elseif (UnitBuff(partyid, spiritOfRedemption)) then
-			self.dead = true
-			XPerl_Raid_ShowFlags(self, XPERL_LOC_DEAD)
-			XPerl_Raid_UpdateName(self)--]]
 		elseif (UnitIsDead(partyid)) then
 			self.dead = true
 			XPerl_Raid_ShowFlags(self, XPERL_LOC_DEAD)
@@ -582,7 +503,7 @@ local function XPerl_Raid_UpdateHealth(self)
 			XPerl_Raid_ShowFlags(self, XPERL_LOC_GHOST)
 			XPerl_Raid_UpdateName(self)
 		else
-			if (self.dead or (myRoster and (--[[(UnitBuff(partyid, feignDeath) and conf.showFD) or --]]myRoster.ressed))) then
+			if (self.dead or (myRoster and (myRoster.ressed))) then
 				XPerl_Raid_UpdateManaType(self, true)
 			end
 			self.dead = nil
@@ -643,10 +564,6 @@ end
 -- XPerl_Raid_UpdateMana
 local function XPerl_Raid_UpdateMana(self)
 	if (rconf.mana) then
-		--[[if (not self.statsFrame.manaBar) then
-			CreateManaBar(self)
-		end]]
-
 		local partyid = self.partyid
 		if (not partyid) then
 			return
@@ -956,16 +873,6 @@ local function UpdateBuffs(self)
 		end
 	end
 
-	--[[if conf.showFD then
-		local _, class = UnitClass(partyid)
-		if class == "HUNTER" then
-			local feigning = UnitBuff(partyid, feignDeath)
-			if feigning ~= self.feigning then
-				self.feigning = feigning
-				XPerl_Raid_UpdateHealth(self)
-			end
-		end
-	end--]]
 end
 
 ------------------
@@ -1074,28 +981,6 @@ function XPerl_Raid_OnUpdate(self, elapsed)
 					XPerl_Raid_CombatFlash(frame, elapsed, false)
 				end
 
-				--[[if (someUpdate) then
-					local unit = frame.partyid -- frame:GetAttribute("unit")
-					if (unit) then
-						local name = UnitName(unit)
-						if (name) then
-							local myRoster = ZPerl_Roster[name]
-							if (myRoster) then
-								if (frame.statsFrame.greyMana) then
-									if (myRoster.offline and UnitIsConnected(unit)) then
-										XPerl_Raid_UpdateHealth(frame)
-									end
-								else
-									if (not myRoster.offline and not UnitIsConnected(unit)) then
-										XPerl_Raid_UpdateHealth(frame)
-									end
-								end
-							end
-						end
-
-						XPerl_UpdateSpellRange(frame, unit, true)
-					end
-				end]]--
 				if conf.rangeFinder.enabled then
 					self.time = elapsed + (self.time or 0)
 					if self.time > 0.2 then
@@ -1107,18 +992,6 @@ function XPerl_Raid_OnUpdate(self, elapsed)
 				end
 			end
 		end
-
-		-- What the hell is this?
-		--[[local i = 1
-		for k, v in pairs(buffUpdates) do
-			UpdateBuffs(k)
-			buffUpdates[k] = nil
-			i = i + 1
-			if (i > 5) then
-				break
-			end
-		end]]
-	--end
 	fullyInitiallized = true
 end
 
@@ -1384,40 +1257,6 @@ function XPerl_Raid_Events:PET_BATTLE_CLOSE()
 		XPerl_Raid_HideShowRaid()
 	end
 end
-
--- XPerl_Raid_Events:PLAYER_ENTERING_WORLDsmall()
---[[function XPerl_Raid_Events:PLAYER_ENTERING_WORLDsmall()
-	-- Force a re-draw. Events not processed for anything that happens during
-	-- the small time you zone. Some display anomolies can occur from this
-	XPerl_Raid_UpdateDisplayAll()
-
-	if (IsInInstance()) then
-		ZPerl_CustomHighlight = true
-		C_AddOns.LoadAddOn("ZPerl_CustomHighlight")
-	end
-end]]
-
---[[function XPerl_Raid_Events:PLAYER_REGEN_ENABLED()
-	-- Update all raid frame that would have tained
-	local tainted
-	if #taintFrames > 0 then
-		tainted = true
-	end
-	for i = 1, #taintFrames do
-		taintable(taintFrames[i])
-	end
-	taintFrames = { }
-	if tainted then
-		XPerl_Raid_ChangeAttributes()
-		XPerl_Raid_Position()
-		XPerl_Raid_Set_Bits(XPerl_Raid_Frame)
-		XPerl_Raid_UpdateDisplayAll()
-		if (XPerl_RaidPets_OptionActions) then
-			XPerl_RaidPets_OptionActions()
-		end
-	end
-end]]
-
 
 function XPerl_Raid_Events:UNIT_CONNECTION()
 	--Update players health when their connection state changes.
@@ -2126,11 +1965,6 @@ function XPerl_RaidTitles()
 					else
 						virtualFrame:Hide()
 					end
-					--[[if rconf.titles then
-						titleFrame:Show()
-					else
-						titleFrame:Hide()
-					end]]
 				else
 					virtualFrame:Hide()
 					titleFrame:Hide()
@@ -2149,10 +1983,6 @@ function XPerl_RaidTitles()
 	end
 
 	XPerl_ProtectedCall(XPerl_EnableRaidMouse)
-
-	--[[if (XPerl_RaidPets_Align) then
-		XPerl_ProtectedCall(XPerl_RaidPets_Align)
-	end]]
 end
 
 -- XPerl_EnableRaidMouse()
@@ -2422,7 +2252,7 @@ function XPerl_RaidTipExtra(unitid)
 				end
 			end
 
-			if (UnitIsDeadOrGhost(unitid) --[[and not UnitBuff(unitid, feignDeath)--]]) then
+			if (UnitIsDeadOrGhost(unitid)) then
 				if (stats.resCount) then
 					GameTooltip:AddLine(XPERL_LOC_RESURRECTED.." x"..stats.resCount)
 				end

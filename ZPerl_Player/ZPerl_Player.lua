@@ -141,23 +141,6 @@ function XPerl_Player_OnLoad(self)
 	self.Power = 0
 	self.nameFrame.pvp.time = 0
 
-	--[[self.nameFrame.pvp:SetScript("OnUpdate", function(self, elapsed)
-		self.time = self.time + elapsed
-		if (self.time >= 0.2) then
-			self.time = 0
-			if (IsPVPTimerRunning()) then
-				local timeLeft = GetPVPTimer()
-				if (timeLeft > 0 and timeLeft < 300000) then -- 5 * 60 * 1000
-					timeLeft = floor(timeLeft / 1000)
-					self.timer:Show()
-					self.timer:SetFormattedText("%d:%02d", timeLeft / 60, timeLeft % 60)
-					return
-				end
-			end
-			self.timer:Hide()
-		end
-	end)]]
-
 	self.nameFrame.pvptimer:SetScript("OnUpdate", XPerl_Player_UpdatePVPTimerOnUpdate)
 
 	local _, playerClass = UnitClass("player")
@@ -169,14 +152,6 @@ function XPerl_Player_OnLoad(self)
 
 	local perlframes = {self.nameFrame, self.statsFrame, self.levelFrame, self.portraitFrame, self.groupFrame}
 	self.FlashFrames = {self.portraitFrame, self.nameFrame,self.levelFrame, self.statsFrame}
-	-- Only Add deathknight to the flash frame list
-	-- This resolves an issue with the backdrop being added constantly to the other special frames.
-	--[[local _, class = UnitClass("player")
-	if (class == "DEATHKNIGHT") then
-		table.insert(self.FlashFrames, self.runes)
-		table.insert(perlframes, self.runes)
-	end]]
-
 	XPerl_RegisterPerlFrames(self, perlframes)--, self.runes
 
 	XPerl_RegisterOptionChanger(XPerl_Player_Set_Bits, self)
@@ -397,10 +372,6 @@ local function XPerl_Player_UpdateRep(self)
 			local color
 			local perc
 
-			--[[if not min or not max or not value then
-				return
-			end]]
-
 			if max == 43000 then
 				max = 42000
 			end
@@ -589,14 +560,6 @@ local function XPerl_Player_UpdatePVP(self)
 	end
 
 	XPerl_Player_UpdatePVPTimer(self)
-
-	--[[local pvp = pconf.pvpIcon and ((UnitIsPVPFreeForAll("player") and "FFA") or (UnitIsPVP("player") and (UnitFactionGroup("player") ~= "Neutral") and UnitFactionGroup("player")))
-	if (pvp) then
-		nf.pvp.icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..pvp)
-		nf.pvp:Show()
-	else
-		nf.pvp:Hide()
-	end]]
 end
 
 -- CreateBar(self, name)
@@ -625,9 +588,6 @@ function XPerl_Player_DruidBarUpdate(self)
 		if (druidBar) then
 			druidBar:Hide()
 			XPerl_StatsFrameSetup(self, {self.statsFrame.xpBar, self.statsFrame.repBar})
-			--[[if (XPerl_Player_Buffs_Position) then
-				XPerl_Player_Buffs_Position(self)
-			end]]
 		end
 		return
 	elseif (not druidBar) then
@@ -671,44 +631,10 @@ function XPerl_Player_DruidBarUpdate(self)
 		--druidBarExtra = 0
 	end
 
-	--[[if druidBarExtra == 1 then
-		ComboPointPlayerFrame:SetPoint("TOPLEFT", self.runes, "CENTER", -35, 18 - 5)
-	else
-		ComboPointPlayerFrame:SetPoint("TOPLEFT", self.runes, "CENTER", -35, 18)
-	end]]
-
-	-- Highlight update
-	--[[if (druidBarExtra) then
-		self.highlight:SetPoint("TOPLEFT", self.levelFrame, "TOPLEFT", 0, 0)
-		self.highlight:SetPoint("BOTTOMRIGHT", self.statsFrame, "BOTTOMRIGHT", 0, 0)
-	else
-		self.highlight:SetPoint("BOTTOMLEFT", self.classFrame, "BOTTOMLEFT", -2, -2)
-		self.highlight:SetPoint("TOPRIGHT", self.nameFrame, "TOPRIGHT", 0, 0)
-	end]]
-
-	--[[local h = 40 + ((druidBarExtra + (pconf.repBar and 1 or 0) + (pconf.xpBar and 1 or 0)) * 10)
-	if InCombatLockdown() then
-		XPerl_ProtectedCall(XPerl_Player_DruidBarUpdate, self)
-	else
-		if (pconf.extendPortrait) then
-			self.portraitFrame:SetHeight(62 + druidBarExtra * 10 + (((pconf.xpBar and 1 or 0) + (pconf.repBar and 1 or 0)) * 10))
-		else
-			self.portraitFrame:SetHeight(62)
-		end
-	end
-	if (InCombatLockdown() and pconf.showRunes) then
-		XPerl_ProtectedCall(XPerl_Player_DruidBarUpdate, self)
-	else
-		self.statsFrame:SetHeight(h)
-	end]]
-
 	local h = 40 + ((((druidBar and druidBar:IsShown()) and 1 or 0) + (pconf.repBar and 1 or 0) + (pconf.xpBar and 1 or 0)) * 10)
 	self.statsFrame:SetHeight(h)
 
 	XPerl_StatsFrameSetup(self, {druidBar, self.statsFrame.xpBar, self.statsFrame.repBar})
-	--[[if (XPerl_Player_Buffs_Position) then
-		XPerl_Player_Buffs_Position(self)
-	end]]
 end
 
 -- XPerl_Player_UpdateMana
@@ -812,10 +738,6 @@ local function XPerl_Player_UpdateHealth(self)
 		greyMsg = XPERL_LOC_GHOST
 	elseif (UnitIsAFK("player") and conf.showAFK) then
 		greyMsg = CHAT_MSG_AFK
-	--[[elseif (conf.showFD and UnitBuff(partyid, feignDeath)) then
-		greyMsg = XPERL_LOC_FEIGNDEATHSHORT
-	elseif (UnitBuff(partyid, spiritOfRedemption)) then
-		greyMsg = XPERL_LOC_DEAD--]]
 	end
 
 	if (greyMsg) then
@@ -904,20 +826,6 @@ function XPerl_Player_OnUpdate(self, elapsed)
 	end
 
 	--XPerl_Player_UpdateMana(self)
-
-	--[[if (IsResting() and UnitLevel("player") < 85) then
-		self.restingDelay = (self.restingDelay or 2) - elapsed
-		if (self.restingDelay <= 0) then
-			self.restingDelay = 2
-			XPerl_Player_UpdateXP(self)
-		end
-	end]]--
-
-	-- Attempt to fix "not-updating bug", suggested by Taylla @ Curse (why was this code in onupdate function twice? identicle code, twice)
-	--[[if (self.updateAFK) then
-		self.updateAFK = nil
-		XPerl_Player_UpdateHealth(self)
-	end]]--
 end
 
 -- XPerl_Player_UpdateBuffs
@@ -1623,18 +1531,6 @@ function XPerl_Player_Events:VARIABLES_LOADED()
 	XPerl_Player_Events.VARIABLES_LOADED = nil
 end
 
---[[function XPerl_Player_Events:PET_BATTLE_OPENING_START()
-	if (self) then
-		self:Hide()
-	end
-end
-
-function XPerl_Player_Events:PET_BATTLE_CLOSE()
-	if (self) then
-		self:Show()
-	end
-end]]
-
 function XPerl_Player_Events:UPDATE_EXHAUSTION()
 	XPerl_Player_UpdateXP(self)
 end
@@ -1755,12 +1651,6 @@ function XPerl_Player_Events:UPDATE_SHAPESHIFT_FORM()
 	if (playerClass == "DRUID") or (playerClass == "SHAMAN") or (playerClass == "PRIEST") then
 		XPerl_Player_DruidBarUpdate(self)
 	end
-
-	--[[if playerClass ~= "DRUID" then
-		return
-	end
-
-	XPerl_Unit_UpdatePortrait(self, true)]]
 end
 
 -- PLAYER_ENTER_COMBAT, PLAYER_LEAVE_COMBAT
@@ -1795,10 +1685,6 @@ function XPerl_Player_Events:PLAYER_SPECIALIZATION_CHANGED()
 			self.state:SetAttribute("playerSpec", GetSpecialization())
 		end
 		XPerl_Player_Set_Bits(self)
-
-		--[[if ((playerClass == "DRUID") or (playerClass == "SHAMAN") or (playerClass == "PRIEST")) then
-			C_Timer.After(0.1, function() XPerl_Player_Set_Bits(self) end)
-		end--]]
 	end
 
 	if XPerl_Player_Buffs_Position then
@@ -1808,17 +1694,6 @@ end
 
 function XPerl_Player_Events:UNIT_AURA()
 	XPerl_Player_UpdateBuffs(self)
-
-	--[[if conf.showFD then
-		local _, class = UnitClass(self.partyid)
-		if (class == "HUNTER") then
-			local feigning = UnitBuff(self.partyid, feignDeath)
-			if (feigning ~= self.feigning) then
-				self.feigning = feigning
-				XPerl_Player_UpdateHealth(self)
-			end
-		end
-	end--]]
 end
 
 -- PLAYER_CONTROL_LOST
@@ -1863,9 +1738,6 @@ function XPerl_Player_Events:UNIT_ENTERED_VEHICLE(showVehicle)
 		if XPerl_ArcaneBar_SetUnit then
 			XPerl_ArcaneBar_SetUnit(self.nameFrame, "vehicle")
 		end
-		--[[if (not InCombatLockdown()) then
-			self:SetAttribute("unit", "vehicle")
-		end]]
 		XPerl_Player_UpdateDisplay(self)
 		--XPerl_SetUnitNameColor(self.nameFrame.text, self.partyid)
 	end
@@ -1907,18 +1779,9 @@ function XPerl_Player_Events:UNIT_EXITING_VEHICLE()
 		if XPerl_ArcaneBar_SetUnit then
 			XPerl_ArcaneBar_SetUnit(self.nameFrame, "player")
 		end
-		--[[if (not InCombatLockdown()) then
-			self:SetAttribute("unit", "player")
-		end]]
 		XPerl_Player_UpdateDisplay(self)
 	end
 end
-
--- UNIT_PET
---[[function XPerl_Player_Events:UNIT_PET()
-	self.partyid = "player"
-	XPerl_Player_UpdateDisplay(self)
-end--]]
 
 function XPerl_Player_Events:UNIT_HEAL_PREDICTION(unit)
 	if pconf.healprediction and unit == self.partyid then
@@ -2104,7 +1967,7 @@ function XPerl_Player_Set_Bits(self)
 		XPerl_SwitchAnchor(self, "TOPLEFT")
 		self:SetHeight(max(h1, h2))
 
-		if (pconf.extendPortrait --[[or (self.runes and pconf.showRunes and pconf.dockRunes)]]) then
+		if (pconf.extendPortrait) then
 			local druidBarExtra
 			if (UnitPowerType(self.partyid) > 0 and not pconf.noDruidBar) and ((playerClass == "DRUID") or (playerClass == "PRIEST")) then
 				druidBarExtra = 1
@@ -2127,14 +1990,6 @@ function XPerl_Player_Set_Bits(self)
 			self.runes:Hide()
 		end
 	end
-
-	--[[self.highlight:ClearAllPoints()
-	if (not pconf.level and not pconf.classIcon and (not ZPerlConfigHelper or ZPerlConfigHelper.ShowTargetCounters == 0)) then
-		self.highlight:SetPoint("TOPLEFT", self.portraitFrame, "TOPLEFT", 0, 0)
-	else
-		self.highlight:SetPoint("TOPLEFT", self.levelFrame, "TOPLEFT", 0, 0)
-	end
-	self.highlight:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0)]]
 
 	self:SetAlpha(conf.transparency.frame)
 

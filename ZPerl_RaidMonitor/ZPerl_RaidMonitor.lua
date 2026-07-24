@@ -559,13 +559,6 @@ function XPerl_RaidMonitor_Init(self)
 		end
 	end
 
-	--[[cast.UNIT_MAXMANA = cast.UNIT_MANA
-	cast.UNIT_RAGE = cast.UNIT_MANA
-	cast.UNIT_MAXRAGE = cast.UNIT_MANA
-	cast.UNIT_ENERGY = cast.UNIT_MANA
-	cast.UNIT_MAXENERGY = cast.UNIT_MANA
-	cast.UNIT_RUNIC_POWER = cast.UNIT_MANA
-	cast.UNIT_MAXRUNIC_POWER = cast.UNIT_MANA]]
 
 	-- cast:PLAYER_REGEN_DISABLED
 	function cast:PLAYER_REGEN_DISABLED()
@@ -907,15 +900,6 @@ function XPerl_RaidMonitor_Init(self)
 			end
 		end
 
-		--[[if config.Totals then
-			if (not self.doneHealth) then
-				self:HealthTotals()
-			end
-
-			if (not self.doneMana) then
-				self:ManaTotals()
-			end
-		end--]]
 	end
 
 	-- cast:Vars

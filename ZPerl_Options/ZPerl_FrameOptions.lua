@@ -340,9 +340,6 @@ function XPerl_Options_MaxScaleSet()
 
 		if (old > max) then
 			slider:SetValue(max)
-		-- This is only needed for the mininum change
-		--[[elseif (old < min) then
-			slider:SetValue(min)]]
 		end
 	end
 end
@@ -987,15 +984,9 @@ function XPerl_Options_DoRangeTooltip(self)
 		GameTooltip:AddLine(" ")
 		if XPerlDB.rangeFinder[XPerl_Options.optRange].spell then
 			GameTooltip:AddLine(XPERL_CONF_CUSTOMSPELL_DESC, 0.5, 1, 0.5)
-		--[[else
-			GameTooltip:AddLine(XPERL_CONF_CUSTOMSPELL_DESC2, 0.5, 1, 0.5)]]
 		end
 		GameTooltip:Show()
 		return
-	--[[else
-		GameTooltip:AddLine(XPERL_CONF_CUSTOMSPELL_DESC2, 0.5, 1, 0.5)
-		GameTooltip:Show()
-		return]]
 	end
 
 	local item = GetItem()
@@ -1010,15 +1001,10 @@ function XPerl_Options_DoRangeTooltip(self)
 				GameTooltip:AddLine(" ")
 				if XPerlDB.rangeFinder[XPerl_Options.optRange].item then
 					GameTooltip:AddLine(XPERL_CONF_CUSTOMSPELL_DESC, 0.5, 1, 0.5)
-				--[[else
-					GameTooltip:AddLine(XPERL_CONF_CUSTOMSPELL_DESC2, 0.5, 1, 0.5)]]
 				end
 				GameTooltip:Show()
 			end
 		end
-	--[[else
-		GameTooltip:AddLine(XPERL_CONF_CUSTOMSPELL_DESC2, 0.5, 1, 0.5)
-		GameTooltip:Show()]]
 	end
 end
 
@@ -1042,15 +1028,9 @@ function XPerl_Options_DoRangeTooltipEnemy(self)
 		GameTooltip:AddLine(" ")
 		if XPerlDB.rangeFinder[XPerl_Options.optRange].spell2 then
 			GameTooltip:AddLine(XPERL_CONF_CUSTOMSPELL_DESC, 0.5, 1, 0.5)
-		--[[else
-			GameTooltip:AddLine(XPERL_CONF_CUSTOMSPELL_ENEMY_DESC2, 0.5, 1, 0.5)]]
 		end
 		GameTooltip:Show()
 		return
-	--[[else
-		GameTooltip:AddLine(XPERL_CONF_CUSTOMSPELL_ENEMY_DESC2, 0.5, 1, 0.5)
-		GameTooltip:Show()
-		return]]
 	end
 
 	local item = GetItemEnemy()
@@ -1065,15 +1045,10 @@ function XPerl_Options_DoRangeTooltipEnemy(self)
 				GameTooltip:AddLine(" ")
 				if XPerlDB.rangeFinder[XPerl_Options.optRange].item2 then
 					GameTooltip:AddLine(XPERL_CONF_CUSTOMSPELL_DESC, 0.5, 1, 0.5)
-				--[[else
-					GameTooltip:AddLine(XPERL_CONF_CUSTOMSPELL_ENEMY_DESC2, 0.5, 1, 0.5)]]
 				end
 				GameTooltip:Show()
 			end
 		end
-	--[[else
-		GameTooltip:AddLine(XPERL_CONF_CUSTOMSPELL_ENEMY_DESC2, 0.5, 1, 0.5)
-		GameTooltip:Show()]]
 	end
 end
 

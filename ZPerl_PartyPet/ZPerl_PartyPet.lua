@@ -121,22 +121,6 @@ function XPerl_Party_Pet_GetUnitFrameByUnit(unitid)
 	return PartyPetFrames[unitid]
 end
 
--- CheckVisiblity()
---[[local function CheckVisiblity()
-	local on
-	for i, frame in pairs(PartyPetFrames) do
-		if (frame:IsShown()) then
-			on = true
-		end
-	end
-
-	if (on) then
-		XPerl_Party_Pet_EventFrame:Show()
-	else
-		XPerl_Party_Pet_EventFrame:Hide()
-	end
-end]]
-
 -- XPerl_Party_Pet_OnLoad
 function XPerl_Party_Pet_OnLoad(self)
 	XPerl_SetChildMembers(self)
@@ -830,16 +814,6 @@ function XPerl_Party_Pet_Set_Bits()
 	for k, v in pairs(AllPetFrames) do
 		XPerl_Party_Pet_Set_Bits1(v)
 	end
-
-	--[[local function RegisterEvents(self, enable, events)
-		for k, v in pairs(events) do
-			if (enable) then
-				self:RegisterEvent(v)
-			else
-				self:UnregisterEvent(v)
-			end
-		end
-	end--]]
 
 	XPerl_Party_Pet_EventFrame:RegisterEvent("PARTY_MEMBER_ENABLE")
 	XPerl_Party_Pet_EventFrame:RegisterEvent("PARTY_MEMBER_DISABLE")

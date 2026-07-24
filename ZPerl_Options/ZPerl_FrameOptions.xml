@@ -4129,13 +4129,6 @@
 																ret = true
 															end
 														end
-													--[[elseif (type == "item") then
-														local itemName = GetItemInfo(detail)
-														if (ItemHasRange(itemName)) then
-															XPerlDB.rangeFinder[XPerl_Options.optRange].spell = nil
-															XPerlDB.rangeFinder[XPerl_Options.optRange].item = itemName
-															ret = true
-														end]]
 													end
 													ClearCursor()
 													self:ShowMe()
@@ -4248,13 +4241,6 @@
 																ret = true
 															end
 														end
-													--[[elseif (type == "item") then
-														local itemName = GetItemInfo(detail)
-														if (ItemHasRange(itemName)) then
-															XPerlDB.rangeFinder[XPerl_Options.optRange].spell2 = nil
-															XPerlDB.rangeFinder[XPerl_Options.optRange].item2 = itemName
-															ret = true
-														end]]
 													end
 													ClearCursor()
 													self:ShowMe()

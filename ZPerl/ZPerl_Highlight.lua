@@ -109,16 +109,6 @@ local function getRankAmount(self, spellId)
 end
 
 local absorbSpells = {
-	-- Shield Barrier
-	--[[[GetSpellInfo(174926)] = {
-		ranks = {
-			[174926] = 4459 --level 85 (4459 + $SPFR * 0.807)
-		},
-		school = "PHYSICAL",
-		class = "WARRIOR",
-		GetModifier = getTalentModifier,
-		GetRankAmount = getRankAmount,
-	},]]
 	-- Ice Barrier
 	[GetSpellInfo(11426)] = {
 		ranks = {
@@ -137,11 +127,6 @@ local absorbSpells = {
 		class = "PRIEST",
 		targetable = true,
 		school = "HOLY",
-		--[[improved = {
-			name = GetSpellInfo(14748),
-			ranks = 2,
-			percentPerRank = 5,
-		},]]
 		GetModifier = getTalentModifier,
 		GetRankAmount = getRankAmount,
 	},

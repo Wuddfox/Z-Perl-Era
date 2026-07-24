@@ -270,12 +270,6 @@ function XPerl_TargetTarget_UpdateDisplay(self, force)
 		self.guid = nil
 		return
 	end
-	--[[if not UnitExists(partyid) then
-		self.targethp = UnitIsGhost(partyid) and 1 or (UnitIsDead(partyid) and 0 or XPerl_Unit_GetHealth(self))
-		self.targetmana = UnitPower(partyid)
-		self.guid = UnitGUID(partyid)
-		self.afk = UnitIsAFK(partyid)
-	end]]
 	if self.conf.enable and UnitExists(self.parentid) and UnitIsConnected(partyid) then
 		self.targetname = UnitName(partyid)
 		if self.targetname then
@@ -401,17 +395,6 @@ function XPerl_TargetTarget_OnUpdate(self, elapsed)
 		XPerl_Target_SetMana(self)
 	end
 
-	--[[if conf.showFD then
-		local _, class = UnitClass(partyid)
-		if class == "HUNTER" then
-			local feigning = UnitBuff(partyid, feignDeath)
-			if feigning ~= self.feigning then
-				self.feigning = feigning
-				XPerl_Target_UpdateHealth(self)
-			end
-		end
-	end--]]
-
 	if (newGuid ~= self.guid) then
 		XPerl_TargetTarget_UpdateDisplay(self)
 	else
@@ -456,17 +439,6 @@ function XPerl_TargetTargetTarget_OnUpdate(self, elapsed)
 		XPerl_Target_SetMana(self)
 	end
 
-	--[[if conf.showFD then
-		local _, class = UnitClass(partyid)
-		if class == "HUNTER" then
-			local feigning = UnitBuff(partyid, feignDeath)
-			if feigning ~= self.feigning then
-				self.feigning = feigning
-				XPerl_Target_UpdateHealth(self)
-			end
-		end
-	end--]]
-
 	if (newGuid ~= self.guid) then
 		XPerl_TargetTarget_UpdateDisplay(self)
 	else
@@ -486,13 +458,6 @@ function XPerl_TargetTargetTarget_OnUpdate(self, elapsed)
 			self.time = 0
 		end
 	end
-
-	--[[if self == XPerl_TargetTargetTarget and newGuid ~= self.guid then
-		XPerl_NoFadeBars(true)
-		XPerl_TargetTarget_UpdateDisplay(self, true)
-		XPerl_NoFadeBars()
-		return
-	end]]
 
 	--XPerl_TargetTarget_OnUpdate(self, elapsed)
 end

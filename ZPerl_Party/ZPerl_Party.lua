@@ -237,9 +237,6 @@ local function onAttrChanged(self, name, value)
 				if (conf) then
 					XPerl_Party_UpdateDisplay(self, true)
 				end
-				--[[if (XPerl_ArcaneBar_RegisterFrame) then
-					XPerl_ArcaneBar_RegisterFrame(self.nameFrame, value)
-				end]]
 			end
 		else
 			SetFrameArray(self)
@@ -352,10 +349,6 @@ function ZPerl_Party_OnLoad(self)
 	end
 
 	XPerl_Party_Set_Bits1(self)
-
-	--[[if (XPerl_party1 and XPerl_party2 and XPerl_party3 and XPerl_party4) then
-		ZPerl_Party_OnLoad = nil
-	end]]
 end
 
 -- ShowHideValues
@@ -414,10 +407,6 @@ local function XPerl_Party_UpdateHealth(self)
 	local Partyhealth, Partyhealthmax = UnitIsGhost(partyid) and 1 or (UnitIsDead(partyid) and 0 or UnitHealth(partyid)), UnitHealthMax(partyid)
 	local reason
 
-	--[[if (self.feigning and not UnitBuff(partyid, feignDeath)) then
-		self.feigning = nil
-	end]]
-
 	XPerl_SetHealthBar(self, Partyhealth, Partyhealthmax)
 
 	XPerl_Party_UpdateAbsorbPrediction(self)
@@ -427,9 +416,7 @@ local function XPerl_Party_UpdateHealth(self)
 	if (not UnitIsConnected(partyid)) then
 		reason = XPERL_LOC_OFFLINE
 	else
-		--[[if (UnitBuff(partyid, feignDeath) and conf.showFD) then
-			reason = XPERL_LOC_FEIGNDEATH
-		else--]]if (self.afk and conf.showAFK) then
+		if (self.afk and conf.showAFK) then
 			reason = CHAT_MSG_AFK
 		elseif (UnitIsDead(partyid)) then
 			reason = XPERL_LOC_DEAD
@@ -437,8 +424,6 @@ local function XPerl_Party_UpdateHealth(self)
 			reason = XPERL_LOC_GHOST
 		elseif ((Partyhealth == 1) and (Partyhealthmax == 1)) then
 			reason = XPERL_LOC_UPDATING
-		--[[elseif (UnitBuff(partyid, spiritOfRedemption)) then
-			reason = XPERL_LOC_DEAD--]]
 		end
 	end
 
@@ -639,9 +624,6 @@ end
 
 -- XPerl_Party_Buff_UpdateAll
 local function XPerl_Party_Buff_UpdateAll(self)
-	--[[if not self:IsVisible() then
-		return
-	end]]
 	if (self.conf) then
 		if (not pconf.buffs.enable and not pconf.debuffs.enable) then
 			self.buffFrame:Hide()
@@ -650,17 +632,6 @@ local function XPerl_Party_Buff_UpdateAll(self)
 			XPerl_Unit_UpdateBuffs(self, nil, nil, pconf.buffs.castable, pconf.debuffs.curable)
 			XPerl_Party_BuffPositions(self)
 		end
-
-		--[[if conf.showFD then
-			local _, class = UnitClass(self.partyid)
-			if (class == "HUNTER") then
-				local feigning = UnitBuff(self.partyid, feignDeath)
-				if (feigning ~= self.feigning) then
-					self.feigning = feigning
-					XPerl_Party_UpdateHealth(self)
-				end
-			end
-		end--]]
 
 		if (conf.highlightDebuffs.enable) then
 			XPerl_CheckDebuffs(self, self.partyid)
@@ -823,13 +794,6 @@ local function XPerl_Party_UpdatePVP(self)
 		pvpIcon:Hide()
 	end
 
-	--[[local pvp = pconf.pvpIcon and ((UnitIsPVPFreeForAll(self.partyid) and "FFA") or (UnitIsPVP(self.partyid) and (UnitFactionGroup(self.partyid) ~= "Neutral") and UnitFactionGroup(self.partyid)))
-	if (pvp) then
-		self.nameFrame.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..pvp)
-		self.nameFrame.pvpIcon:Show()
-	else
-		self.nameFrame.pvpIcon:Hide()
-	end]]
 end
 
 -- XPerl_Party_UpdateCombat
@@ -892,10 +856,6 @@ local function XPerl_Party_UpdateMana(self)
 	end
 	-- end division by 0 check
 
-	--[[if (Partymanamax == 1 and Partymana > Partymanamax) then
-		Partymanamax = Partymana
-	end--]]
-
 	self.statsFrame.manaBar:SetMinMaxValues(0, unitPowerMax)
 	self.statsFrame.manaBar:SetValue(unitPower)
 
@@ -904,12 +864,6 @@ local function XPerl_Party_UpdateMana(self)
 	else
 		self.statsFrame.manaBar.percent:SetFormattedText(percD, 100 * powerPercent)
 	end
-
-	--[[if (pconf.values) then
-		self.statsFrame.manaBar.text:Show()
-	else
-		self.statsFrame.manaBar.text:Hide()
-	end]]
 
 	self.statsFrame.manaBar.text:SetFormattedText("%d/%d", unitPower, unitPowerMax)
 
@@ -942,10 +896,6 @@ local function XPerl_Party_Update_Range(self, overrideUnit)
 		self.nameFrame.rangeIcon:Show()
 		self.nameFrame.rangeIcon:SetAlpha(1)
 	end
-	--[[if (UnitInVehicle(self.partyid) and pconf.range30yard) then -- Not sure if this is proper way to do it, so this pretty much forces anyone in a vehicle to show out of range.
-		self.nameFrame.rangeIcon:Show()
-		self.nameFrame.rangeIcon:SetAlpha(1)
-	end]]
 end
 
 -- XPerl_Party_SingleGroup
@@ -1146,22 +1096,6 @@ function XPerl_Party_OnUpdate(self, elapsed)
 			self.time = 0
 		end
 
-		--[=[if (checkRaidNextUpdate) then
-			checkRaidNextUpdate = checkRaidNextUpdate - 1
-			if (checkRaidNextUpdate <= 0) then
-				checkRaidNextUpdate = nil
-				CheckRaid()
-
-				-- Due to a bug in the API (WoW 2.0.1), GetPartyLeaderIndex() can often claim
-				-- that party1 is the leader, even when they're not. So, we do a delayed check
-				-- after a party change
-				--[[for i, frame in pairs(PartyFrames) do
-					if (frame.partyid) then
-						XPerl_Party_UpdateLeader(frame)
-					end
-				end]] -- Do we really need this now?
-			end
-		end]=]
 	--end
 end
 
@@ -1288,14 +1222,6 @@ function XPerl_Party_Events:PARTY_LOOT_METHOD_CHANGED()
 		end
 	end
 end
-
---[[function XPerl_Party_Events:PET_BATTLE_OPENING_START()
-	CheckRaid()
-end
-
-function XPerl_Party_Events:PET_BATTLE_CLOSE()
-	CheckRaid()
-end]]
 
 -- RAID_TARGET_UPDATE
 function XPerl_Party_Events:RAID_TARGET_UPDATE()
@@ -1560,10 +1486,6 @@ local function CalcWidth(self)
 
 	if (pconf and pconf.portrait) then
 		w = w + (self.portraitFrame:GetWidth() or 0) - 2
-
-		--[[if (pconf.level or pconf.classIcon) then
-			w = w + (self.levelFrame:GetWidth() or 0) - 2
-		end]]
 	else
 		w = w + (self.levelFrame:GetWidth() or 0) - 2
 	end
@@ -1812,11 +1734,6 @@ function XPerl_Party_Set_Bits1(self)
 
 	--XPerl_SetTextTransparencyFrame(self)
 
-	--[[if (conf.ShowPartyPets == 1 and XPerl_PartyPetFrames) then
-		if (not self.petFrame) then
-			self.petFrame = CreateFrame("Button", "XPerl_partypet"..self:GetID(), self, "XPerl_Party_Pet_FrameTemplate")
-	end]]
-
 	self.petFrame = _G["XPerl_partypet"..self:GetID()]
 	if (self.petFrame) then
 		self.petFrame:ClearAllPoints()
@@ -1834,35 +1751,6 @@ end
 
 -- XPerl_Party_SetInitialAttributes()
 function XPerl_Party_SetInitialAttributes()
-
-	--[[partyHeader.initialConfigFunction = function(self)
-		-- This is the only place we're allowed to set attributes whilst in combat
-
-		self:SetAttribute("*type1", "target")
-		self:SetAttribute("type2", "menu")
-		self.menu = XPerl_ShowGenericMenu
-		XPerl_RegisterClickCastFrame(self)
-
-		-- Does AllowAttributeChange work for children?
-		self.nameFrame:SetAttribute("useparent-unit", true)
-		self.nameFrame:SetAttribute("*type1", "target")
-		self.nameFrame:SetAttribute("type2", "menu")
-		self.nameFrame.menu = XPerl_ShowGenericMenu
-		XPerl_RegisterClickCastFrame(self.nameFrame)
-
-		--self:SetAttribute("initial-height", CalcHeight())
-		--self:SetAttribute("initial-width", CalcWidth())
-	end--]]
-
-	-- Fix Secure Header taint in combat
-	--[[local maxColumns = partyHeader:GetAttribute("maxColumns") or 1
-	local unitsPerColumn = partyHeader:GetAttribute("unitsPerColumn") or 5
-	local startingIndex = partyHeader:GetAttribute("startingIndex") or 1
-	local maxUnits = maxColumns * unitsPerColumn
-
-	partyHeader:Show()
-	partyHeader:SetAttribute("startingIndex", - maxUnits + 1)
-	partyHeader:SetAttribute("startingIndex", startingIndex)--]]
 
 	partyHeader:Hide()
 

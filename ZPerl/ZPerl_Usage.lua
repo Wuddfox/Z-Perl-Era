@@ -56,14 +56,6 @@ end
 
 --mod:SetScript("OnEvent", modOnEvent)
 
---[[GameTooltip:HookScript("OnTooltipSetUnit", function(self)
-	local name, unitid = self:GetUnit()
-	if (not unitid) then
-		unitid = "mouseover"
-	end
-	mod:TooltipInfo(self, unitid)
-end)]]
-
 local function UnitFullName(unit)
 	local n, s = UnitName(unit)
 	if (s and s ~= "") then

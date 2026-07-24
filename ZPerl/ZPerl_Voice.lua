@@ -98,16 +98,6 @@ end
 
 -- voice:Updatevoice
 function voice:UpdateVoice(frame, onoff)
-	--[[if (IsVoiceChatEnabled()) then
-		if (onoff == nil) then
-			if (frame.partyid and GetVoiceStatus(frame.partyid)) then
-				onoff = UnitIsTalking(frame.partyid)
-			end
-		end
-	else
-		onoff = nil
-	end]]
-
 	if (onoff) then
 		frame.voiceButton.On:Show()
 		frame.voiceButton.Flash:Hide()

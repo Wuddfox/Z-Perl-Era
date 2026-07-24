@@ -194,16 +194,6 @@ function XPerl_pcall(...)
 end
 
 -- GetNamesWithoutBuff
---[[local matches = {
-	--{GetSpellInfo(21562)},				-- Fortitude
-	--{GetSpellInfo(1459)},				-- Intellect
-	--{GetSpellInfo(1126)},				-- Mark of the Wild
-	--{GetSpellInfo(27683)},			-- Shadow Protection
-	--{GetSpellInfo(19740)},				-- Blessing of Might
-	--{GetSpellInfo(20217)},				-- Blessing of Kings
-}]]
-
---local checkExpiring
 local lastNamesList
 local lastName
 local lastWith
@@ -216,33 +206,6 @@ local function GetNamesWithoutBuff(spellName, with, filter)
 	local count = 0
 	local names
 	local unitName
-
-	--[[local _, class = UnitClass("player")
-
-	if (not checkExpiring) then
-		local cet = {}
-
-		if (class == "PRIEST" or UnitIsGroupAssistant("player")) then
-			--cet[GetSpellInfo(21562)] = 2			-- Fortitudeh
-			--cet[GetSpellInfo(27683)] = 2			-- Shadow Protection
-		end
-
-		if (class == "DRUID" or UnitIsGroupAssistant("player")) then
-			--cet[GetSpellInfo(1126)] = 2				-- Mark of the Wild
-			--cet[GetSpellInfo(467)] = 1			-- Thorns
-		end
-
-		if (class == "MAGE" or UnitIsGroupAssistant("player")) then
-			--cet[GetSpellInfo(1459)] = 2				-- Intellect
-		end
-
-		if (class == "PALADIN" or UnitIsGroupAssistant("player")) then
-			--cet[GetSpellInfo(19740)] = 2			-- Blessing of Might
-			--cet[GetSpellInfo(20217)] = 2			-- Blessing of Kings
-		end
-
-		checkExpiring = cet
-	end]]
 
 	--local withList = XPerl_GetReusableTable()
 	local withList = { }
@@ -273,28 +236,7 @@ local function GetNamesWithoutBuff(spellName, with, filter)
 
 				if name == spellName then
 					hasBuff = true
-				--[[else
-					for dups, pair in pairs(matches) do
-						if (name == pair[1] or name == pair[2]) then
-							if (spellName == pair[1] or spellName == pair[2]) then
-								hasBuff = true
-								break
-							end
-						end
-					end]]
 				end
-				--[[if (hasBuff) then
-					if (without and checkExpiring) then
-						local found = checkExpiring[name]
-
-						if (found) then
-							if (endTime and endTime > 0 and endTime <= GetTime() + (found * 60)) then
-								GameTooltip:AddLine(format(XPERL_RAID_TOOLTIP_BUFFEXPIRING, XPerlColourTable[unitClass]..name.."|c", buffName, SecondsToTime(endTime - GetTime())), 1, 0.2, 0)
-							end
-						end
-					end
-					break
-				end--]]
 			end
 
 			if (with and hasBuff) or (not with and not hasBuff) then
@@ -554,17 +496,6 @@ function ZPerl_Init()
 		CT_RegisterMod(XPerl_ProductName.." "..XPerl_VersionNumber, "By "..XPerl_Author, 4, XPerl_ModMenuIcon, XPerl_LongDescription, "switch", "", XPerl_Toggle)
 	end
 
-	--[[if (myAddOnsFrame) then
-		myAddOnsList.XPerl_Description = {
-			name			= XPerl_Description,
-			description		= XPerl_LongDescription,
-			version			= XPerl_VersionNumber,
-			category		= MYADDONS_CATEGORY_OTHERS,
-			frame			= "XPerl_Globals",
-			optionsframe	= "XPerl_Options"
-		}
-	end--]]
-
 	--XPerl_RegisterSMBarTextures()
 
 	XPerl_pcall(ZPerl_DebufHighlightInit)
@@ -775,8 +706,4 @@ function XPerl_OptionActions(which)
 	XPerl_pcall(XPerl_SetTextTransparency)
 	doneOptions = true
 
-	-- Avoid tainting default blizzard buffs using cooldown options. Cooldowns won't show immediately atm.
-	--[[if (conf.buffs.blizzardCooldowns and BuffFrame and BuffFrame:IsShown()) then
-		securecall("BuffFrame_Update")
-	end]]
 end

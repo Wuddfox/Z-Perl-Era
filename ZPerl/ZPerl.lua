@@ -248,94 +248,7 @@ XPerlColourTable = setmetatable({ }, {
 --	})
 --local xpPercent = XPerl_Percent
 
--- XPerl_ShowMessage
--- debug function
---[[function XPerl_ShowMessage(cMsg)
-	local str = "|c00FF7F00"..event.."|r"
-	local theEnd
-	if (arg1 and (arg1 == "player" or arg1 == "pet" or arg1 == "target" or arg1 =="focus" or strfind(arg1, "^raid") or strfind(arg1, "^party"))) then
-		local class = select(2, UnitClass(arg1))
-		if (class) then
-			str = str..", |c00808080"..tostring(arg1).."("..XPerlColourTable[class]..UnitName(arg1).."|c00808080)|r"
-			theEnd = 2
-		end
-	else
-		theEnd = 1
-	end
-
-	local tail, doit = ""
-	for i = 9,theEnd,-1 do
-		local v = _G["arg"..i]
-		if (v or doit) then
-			if (tail ~= "") then
-				tail = tostring(v)..", "..tail
-			else
-				tail = tostring(v)
-			end
-			doit = true
-		end
-	end
-	if (tail ~= "") then
-		str = str..", "..tail
-	end
-
-	if (cMsg) then
-		str = cMsg.." - "..str
-	end
-
-	local cf = ChatFrame2
-	if (not cf:IsVisible()) then
-		cf = DEFAULT_CHAT_FRAME
-	end
-	if (self and self.GetName and self:GetName()) then
-		cf:AddMessage("|c00007F7F"..self:GetName().."|r - "..str)
-	else
-		cf:AddMessage(str)
-	end
-end]]
-
 XPerl_AnchorList = {"TOP", "LEFT", "BOTTOM", "RIGHT"}
-
--- FindABandage()
---[[local function FindABandage()
-	local bandages = {
-		[173192] = true, -- Shrouded Cloth Bandage
-		[173191] = true, -- Heavy Shrouded Cloth Bandage
-		[158382] = true, -- Deep Sea Bandage
-		[158381] = true, -- Tidespray Linen Bandage
-		[142332] = true, -- Feathered Luffa
-		[136653] = true, -- Silvery Salve
-		[133942] = true, -- Silkweave Splint
-		[133940] = true, -- Silkweave Bandage
-		[115497] = true, -- Ashran Bandage
-		[111603] = true, -- Antiseptic Bandage
-		[72986] = true, -- Heavy Windwool Bandage
-		[72985] = true, -- Windwool Bandage
-		[53051] = true, -- Dense Embersilk Bandage
-		[53050] = true, -- Heavy Embersilk Bandage
-		[53049] = true, -- Embersilk Bandage
-		[34722] = true, -- Heavy Frostweave Bandage
-		[34721] = true,	-- Frostweave Bandage
-		[21991] = true, -- Heavy Netherweave Bandage
-		[21990] = true, -- Netherweave Bandage
-		[14530] = true, -- Heavy Runecloth Bandage
-		[14529] = true, -- Runecloth Bandage
-		[8545] = true, -- Heavy Mageweave Bandage
-		[8544] = true, -- Mageweave Bandage
-		[6451] = true, -- Heavy Silk Bandage
-		[6450] = true, -- Silk Bandage
-		[3531] = true, -- Heavy Wool Bandage
-		[3530] = true, -- Wool Bandage
-		[2581] = true, -- Heavy Linen Bandage
-		[1251] = true, -- Linen Bandage
-	}
-
-	for k, v in pairs(bandages) do
-		if (C_Item and C_Item.GetItemCount) and C_Item.GetItemCount(k) or GetItemCount(k) > 0 then
-			return GetItemInfo(k)
-		end
-	end
-end]]
 
 local playerClass
 
@@ -392,12 +305,6 @@ local function DoRangeCheck(unit, opt)
 	end
 
 	if not range then
-		--local playerRealm = UnitAura("player", SpiritRealm, "HARMFUL")
-		--local unitRealm = UnitAura(unit, SpiritRealm, "HARMFUL")
-
-		--[[if playerRealm ~= unitRealm then
-			range = nil
-		else--]]
 		if opt.interact then
 			if opt.interact == 6 then -- 45y
 				local checkedRange
@@ -445,15 +352,6 @@ local function DoRangeCheck(unit, opt)
 				-- Fallback (28y) (BCC = 28y) (Vanilla = 28 yards)
 				range = not InCombatLockdown() and CheckInteractDistance(unit, 4) or 1
 			end
-		--[[elseif not IsRetail and not IsVanillaClassic and (opt.item or opt.item2) then
-			if UnitCanAssist("player", unit) and opt.item then
-				range = not InCombatLockdown() and IsItemInRange(opt.item, unit)
-			elseif UnitCanAttack("player", unit) and opt.item2 then
-				range = not InCombatLockdown() and IsItemInRange(opt.item2, unit)
-			else
-				-- Fallback (28y) (BCC = 28y) (Vanilla = 28 yards)
-				range = not InCombatLockdown() and CheckInteractDistance(unit, 4)
-			end]]
 		else
 			range = 1
 		end
@@ -480,7 +378,7 @@ function XPerl_UpdateSpellRange2(self, overrideUnit, isRaidFrame)
 		local mainA, nameA, statsA -- Receives main, name and stats alpha levels
 
 		if (rf.enabled and (isRaidFrame or not conf.rangeFinder.raidOnly)) then
-			if (not UnitIsVisible(unit))--[[ or UnitInVehicle(unit)]] then
+			if (not UnitIsVisible(unit)) then
 				if (rf.Main.enabled) then
 					mainA = conf.transparency.frame * rf.Main.FadeAmount
 				else
@@ -491,8 +389,6 @@ function XPerl_UpdateSpellRange2(self, overrideUnit, isRaidFrame)
 						statsA = rf.StatsFrame.FadeAmount
 					end
 				end
-			--[[elseif (XPerl_Highlight:HasEffect(UnitName(unit), "AGGRO")) then
-				mainA = conf.transparency.frame]]
 			else
 				if (rf.Main.enabled) then
 					mainA = DoRangeCheck(unit, rf.Main)
@@ -569,11 +465,6 @@ function XPerl_StartupSpellRange()
 	if (not XPerl_DefaultRangeSpells.ANY) then
 		XPerl_DefaultRangeSpells.ANY = {}
 	end
-
-	--[[local bandage = FindABandage()
-	if bandage then
-		XPerl_DefaultRangeSpells.ANY.item = bandage
-	end]]
 
 	local rf = conf.rangeFinder
 
@@ -754,20 +645,6 @@ function XPerl_BlizzFrameDisable(self)
 	self:UnregisterAllEvents()
 
 	if self == PlayerFrame then
-		--[[local events = {
-			"PLAYER_ENTERING_WORLD",
-			"UNIT_ENTERING_VEHICLE",
-			"UNIT_ENTERED_VEHICLE",
-			"UNIT_EXITING_VEHICLE",
-			"UNIT_EXITED_VEHICLE",
-		}
-
-		for i, event in pairs(events) do
-			if pcall(self.RegisterEvent, self, event) then
-				self:RegisterEvent(event)
-			end
-		end--]]
-
 		if AlternatePowerBar then
 			AlternatePowerBar:UnregisterAllEvents()
 		end
@@ -909,7 +786,7 @@ function XPerl_ColourHealthBar(self, healthPct, partyid)
 		partyid = self.partyid
 	end
 	local bar = self.statsFrame.healthBar
-	if (--[[string.find(partyid, "raid") and ]]conf.colour.classbar and UnitIsPlayer(partyid)) then
+	if (conf.colour.classbar and UnitIsPlayer(partyid)) then
 		local _, class = UnitClass(partyid)
 		if (class) then
 			local c = barColours[class]
@@ -1208,12 +1085,6 @@ function XPerl_UnlockFrames()
 		XPerl_AggroAnchor:Enable()
 	end
 
-	--[[if (XPerl_Player) then
-		if (XPerl_Player.runes and not InCombatLockdown()) then
-			XPerl_Player.runes:EnableMouse(true)
-		end
-	end]]
-
 	if (XPerl_Options) then
 		XPerl_Options:Show()
 		XPerl_Options:SetAlpha(0)
@@ -1246,12 +1117,6 @@ function XPerl_LockFrames()
 	if (XPerl_AggroAnchor) then
 		XPerl_AggroAnchor:Disable()
 	end
-
-	--[[if (XPerl_Player) then
-		if (XPerl_Player.runes and not InCombatLockdown()) then
-			XPerl_Player.runes:EnableMouse(false)
-		end
-	end]]
 
 	if (XPerl_RaidTitles) then
 		XPerl_RaidTitles()
@@ -1471,19 +1336,6 @@ function XPerl_MinimapButton_Details(tt, ldb)
 			tt:AddLine(XPERL_MINIMAP_HELP5)
 		end
 	end
-	--GetRealNumRaidMembers doesn't exist anymore in 5.0.4
-	--[==[if (GetRealNumRaidMembers) then
-		if (GetNumGroupMembers() > 0 and GetRealNumRaidMembers() > 0) then
-			if (select(2, IsInInstance()) == "pvp") then
-				tt:AddLine(format(XPERL_MINIMAP_HELP3, GetRealNumRaidMembers(), GetNumSubgroupMembers(LE_PARTY_CATEGORY_HOME)))
-
-				if (IsRealPartyLeader()) then
-					tt:AddLine(XPERL_MINIMAP_HELP4)
-				end
-			end
-		end
-	end]==]
-
 	if UpdateAddOnMemoryUsage and IsAltKeyDown() then
 		local showDiff = IsShiftKeyDown()
 
@@ -2156,9 +2008,6 @@ function XPerl_RestoreAllPositions()
 			else
 				local frame = _G[k]
 				if frame then
-					--[[if k == "XPerl_Runes" and conf.player.dockRunes then
-						break
-					end]]
 					if v.left and v.top then
 						frame:SetUserPlaced(false)
 						frame:ClearAllPoints()
@@ -2183,16 +2032,6 @@ function XPerl_RestoreAllPositions()
 								end
 							end
 						end
-						--[[if (k == "XPerl_Runes") then
-							frame:SetMovable(true)
-							frame:EnableMouse(true)
-							frame:RegisterForDrag("LeftButton")
-							frame:SetScript("OnDragStart", frame.StartMoving)
-							frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-							frame:SetUserPlaced(true)
-						else]]
-							--frame:SetUserPlaced(true)
-						--end
 					end
 				end
 			end
@@ -3057,11 +2896,6 @@ function XPerl_Unit_BuffPositions(self, buffList1, buffList2, size1, size2)
 	end
 end
 
---[[local function fixMeBlizzard(self)
-	self.anim:Play()
-	self:SetScript("OnUpdate", nil)
-end]]
-
 -- XPerl_Unit_UpdateBuffs(self)
 function XPerl_Unit_UpdateBuffs(self, maxBuffs, maxDebuffs, castableOnly, curableOnly)
 	local buffs, debuffs, buffsMine, debuffsMine = 0, 0, 0, 0
@@ -3390,10 +3224,6 @@ function XPerl_FrameFlash(self)
 			error("X-Perl ["..self:GetName()..".frameFlash is set with no entry in FlashFrame.list]")
 		end
 
-		--[[self.frameFlash = XPerl_GetReusableTable()
-		self.frameFlash.out = true
-		self.frameFlash.alpha = 1
-		self.frameFlash.shown = self:IsShown()]]
 		self.frameFlash = {out = true, alpha = 1, shown = self:IsShown()}
 
 		FlashFrame.list[self] = true
@@ -3439,11 +3269,6 @@ function XPerl_ProtectedCall(func, self)
 	if (func) then
 		if (InCombatLockdown()) then
 			XPerl_OutOfCombatQueue[func] = self == nil and false or self
-			--[[if (self) then
-				tinsert(XPerl_OutOfCombatQueue, {func, self})
-			else
-				tinsert(XPerl_OutOfCombatQueue, func)
-			end]]
 		else
 			func(self)
 		end

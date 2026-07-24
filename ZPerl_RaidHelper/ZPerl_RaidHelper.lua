@@ -1227,43 +1227,6 @@ local function onAttrChanged(self, name, value)
 	end
 end
 
--- SetChildAttributes(self, child)
---[[local function SetChildAttributes(self, Type, suffix)
-
-	local frame = self
-
-	frame.type = Type
-
-	if (suffix) then
-		frame = CreateFrame("Button", self:GetName()..suffix, self, "XPerl_MTList_UnitTemplate")
-		frame:SetAttribute("useparent-unit", true)
-		frame:SetAttribute("unitsuffix", suffix)
-		frame:SetPoint("TOPLEFT", self.target or self, "TOPRIGHT", 0, 0)
-		self[suffix] = frame
-	else
-		self.hidden = false
-	end
-
-	frame:SetAttribute("*type1", "target")
-
-	XPerl_RegisterClickCastFrame(frame)
-	SetUnitSettings(frame)
-	frame:SetScript("OnShow", UpdateUnit)
-
-	if (not suffix) then
-		self:SetScript("OnAttributeChanged", onAttrChanged)
-	end
-
-	frame:Show()
-	tinsert(XUnits, frame)
-end
-
-function XPerl_MTList_ChildUnits(self)
-	SetChildAttributes(self, "MT")
-	SetChildAttributes(self, "MTT", "target")
-	SetChildAttributes(self, "MTTT", "targettarget")
-end--]]
-
 -- XPerl_MTList_ChildUnits
 function XPerl_MTList_ChildUnits(self)
 	self.type = "MT"

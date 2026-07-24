@@ -400,35 +400,6 @@ local function XPerl_Target_UpdateCombo(self)
 	end
 end
 
---[[local function XPerl_Target_DebuffUpdate(self)
-	local partyid = self.partyid
-	if (GetComboPoints((not IsClassic and UnitHasVehicleUI("player")) and "vehicle" or "player", partyid) == 0) then
-		local numDebuffs = 0
-		local r, g, b = GetComboColour(numDebuffs)
-		if (tconf.combo.enable) then
-			self.cpFrame:Hide()
-			self.nameFrame.cpMeter:SetValue(numDebuffs)
-			if (r) then
-				self.nameFrame.cpMeter:Show()
-				self.nameFrame.cpMeter:SetStatusBarColor(r, g, b, 0.4)
-			else
-				self.nameFrame.cpMeter:Hide()
-			end
-		else
-			self.nameFrame.cpMeter:Hide()
-			self.cpFrame.text:SetText(numDebuffs)
-			if (r) then
-				self.cpFrame:Show()
-				self.cpFrame.text:SetTextColor(r, g, b)
-			else
-				self.cpFrame:Hide()
-			end
-		end
-	else
-		XPerl_Target_UpdateCombo(self)
-	end
-end--]]
-
 -------------------------
 -- The Update Functions--
 -------------------------
@@ -457,14 +428,6 @@ local function XPerl_Target_UpdatePVP(self)
 	else
 		pvpIcon:Hide()
 	end
-
-	--[[local pvp = self.conf.pvpIcon and ((UnitIsPVPFreeForAll(partyid) and "FFA") or (UnitIsPVP(partyid) and (UnitFactionGroup(partyid) ~= "Neutral") and UnitFactionGroup(partyid)))
-	if (pvp) then
-		self.nameFrame.pvp.icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..pvp)
-		self.nameFrame.pvp:Show()
-	else
-		self.nameFrame.pvp:Hide()
-	end]]
 
 	if (self.conf.reactionHighlight) then
 		local c = XPerl_ReactionColour(partyid)
@@ -505,12 +468,6 @@ local function XPerl_Target_UpdateLevel(self)
 		self.levelFrame.skull:Hide()
 		self.levelFrame:SetWidth(27)
 		if (targetlevel < 0) then
-			--[[if (UnitClassification(self.partyid) == "worldboss") then
-				self.levelFrame.text:Hide()
-				self.levelFrame.skull:Show()
-			else
-				self.levelFrame:Hide()
-			end]]
 			self.levelFrame.text:Hide()
 			self.levelFrame.skull:Show()
 		else
@@ -975,21 +932,6 @@ function XPerl_Target_UpdateHealth(self)
 	self.targethpmax = hpMax
 	self.afk = UnitIsAFK(partyid) and conf.showAFK == 1
 
-	--[[if (self.targethp == 100) then
-		-- Try to work around the occasion WoW targettarget bug of a zero hp tank who is not at zero hp
-		if (not UnitIsDeadOrGhost(partyid)) then
-			if (UnitInRaid(partyid)) then
-				for i = 1, GetNumGroupMembers() do
-					local id = "raid"..i
-					if (UnitIsUnit(id, partyid)) then
-						hp, hpMax, percent = UnitIsGhost(id) and 1 or (UnitIsDead(id) and 0 or UnitHealth(id)), UnitHealthMax(id), false
-						break
-					end
-				end
-			end
-		end
-	end]]
-
 	if hp and hp >= 0 and hpMax and hpMax > 0 then
 		XPerl_SetHealthBar(self, hp, hpMax)
 	end
@@ -1011,17 +953,13 @@ function XPerl_Target_UpdateHealth(self)
 		if (UnitIsGhost(partyid)) then
 			self.statsFrame.manaBar.percent:Hide()
 			self.statsFrame.healthBar.percent:SetText(XPERL_LOC_GHOST)
-		--[[elseif (conf.showFD and UnitBuff(partyid, feignDeath)) then
-			--self.statsFrame.manaBar.percent:Hide()
-			--hb.percent:SetText(XPERL_LOC_DEAD)
-			hbt:SetText(XPERL_LOC_FEIGNDEATH)--]]
 		elseif (UnitIsDead(partyid)) then
 			--self.statsFrame.manaBar.percent:Hide()
 			self.statsFrame.healthBar.percent:SetText(XPERL_LOC_DEAD)
 		elseif (UnitExists(partyid) and not UnitIsConnected(partyid)) then
 			self.statsFrame.manaBar.percent:Hide()
 			self.statsFrame.healthBar.percent:SetText(XPERL_LOC_OFFLINE)
-		elseif (UnitIsAFK(partyid) and conf.showAFK) --[[and (self == XPerl_Target or self == XPerl_Focus))]] then
+		elseif (UnitIsAFK(partyid) and conf.showAFK) then
 			self.statsFrame.healthBar.percent:SetText(CHAT_MSG_AFK)
 		else
 			self.statsFrame.manaBar.percent:Show()
@@ -1030,8 +968,6 @@ function XPerl_Target_UpdateHealth(self)
 	else
 		if (UnitIsGhost(partyid)) then
 			self.statsFrame.healthBar.text:SetText(XPERL_LOC_GHOST)
-		--[[elseif (conf.showFD and UnitBuff(partyid, feignDeath)) then
-			hbt:SetText(XPERL_LOC_FEIGNDEATH)--]]
 		elseif (UnitIsDead(partyid)) then
 			self.statsFrame.healthBar.text:SetText(XPERL_LOC_DEAD)
 		elseif (UnitExists(partyid) and not UnitIsConnected(partyid)) then
@@ -1204,9 +1140,6 @@ local function XPerl_Target_ComboFrame_Update()
 					UIFrameFade(comboPoint.Highlight, fadeInfo)
 				end
 			else
-				--[[if ENABLE_COLORBLIND_MODE == "1" then
-					comboPoint:Hide()
-				end]]
 				comboPoint.Highlight:SetAlpha(0)
 				comboPoint.Shine:SetAlpha(0)
 			end
@@ -1410,71 +1343,6 @@ local missIndex = {
 	SPELL_PERIODIC_MISSED = 4,
 }
 
--- DoEvent
---[[local function DoEvent(self, timestamp, event, hideCaster, srcGUID, srcName, srcFlags, srcRaidFlags, dstGUID, dstName, dstFlags, destRaidFlags, ...)
-	if (bit_band(dstFlags, self.combatMask) ~= 0 and bit_band(srcFlags, 0x00000001) ~= 0) or (UnitIsUnit("player", self.partyid) and bit_band(dstFlags, 0x00000001)) then
-		local feedbackText = self.feedbackText
-		local fontHeight = self.feedbackFontHeight
-		local text
-		local r = 1
-		local g = 1
-		local b = 1
-
-		if (event == "SWING_DAMAGE" or event == "RANGE_DAMAGE" or event == "SPELL_DAMAGE" or event == "DAMAGE_SHIELD" or event == "ENVIRONMENTAL_DAMAGE" or event == "SPELL_PERIODIC_DAMAGE") then
-			local amount, overkill, spellSchool, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand, multistrike = select(amountIndex[event], ...)
-			if (amount and amount ~= 0) then
-				if (critical or crushing) then
-					fontHeight = fontHeight * 1.5
-				elseif (glancing) then
-					fontHeight = fontHeight * 0.75
-				end
-				if (event ~= "SWING_DAMAGE" and event ~= "RANGE_DAMAGE") then
-					b = 0
-				end
-				text = amount
-			end
-
-		elseif (event == "SWING_MISSED" or event == "RANGE_MISSED" or event == "SPELL_MISSED" or event == "SPELL_PERIODIC_MISSED") then
-			local missType = select(missIndex[event], ...)
-			if (missType) then
-				if (event ~= "SWING_MISSED" and event ~= "RANGE_MISSED") then
-					b = 0
-				end
-				text = CombatFeedbackText[missType]
-			end
-
-		elseif (event == "SPELL_HEAL" or event == "SPELL_PERIODIC_HEAL") then
-			local spellID, spellName, spellSchool, amount, overhealing, absorbed, critical = ...
-			if (amount and amount ~= 0) then
-				if (critical) then
-					fontHeight = fontHeight * 1.5
-				end
-				r = 0
-				g = 1
-				b = 0
-				text = amount
-			end
-		end
-
-		if (text) then
-			self.feedbackStartTime = GetTime()
-
-			feedbackText:SetTextHeight(fontHeight)
-			feedbackText:SetText(text)
-			feedbackText:SetTextColor(r, g, b)
-			feedbackText:SetAlpha(0)
-			feedbackText:Show()
-		end
-	end
-end--]]
-
--- COMBAT_LOG_EVENT_UNFILTERED
---[[function XPerl_Target_Events:COMBAT_LOG_EVENT_UNFILTERED()
-	if (self.conf.hitIndicator and self.conf.portrait) then
-		DoEvent(self, CombatLogGetCurrentEventInfo())
-	end
-end--]]
-
 -- UNIT_COMBAT
 function XPerl_Target_Events:UNIT_COMBAT(unit, action, descriptor, damage, damageType)
 	if unit ~= self.partyid then
@@ -1639,13 +1507,6 @@ function XPerl_Target_Events:UNIT_CLASSIFICATION_CHANGED()
 	XPerl_Target_UpdateClassification(self)
 end
 
--- UNIT_COMBO_POINTS
---[[function XPerl_Target_Events:UNIT_COMBO_POINTS(unit)
-	if (unit == "player") or (unit == "vehicle") then
-		XPerl_Target_UpdateCombo(self)
-	end
-end--]]
-
 -- UNIT_AURA
 function XPerl_Target_Events:UNIT_AURA()
 	if not UnitExists(self.partyid) then
@@ -1661,18 +1522,6 @@ function XPerl_Target_Events:UNIT_AURA()
 		XPerl_Unit_UpdateBuffs(self, nil, nil, self.conf.buffs.castable, self.conf.debuffs.curable)
 		XPerl_Target_BuffPositions(self)
 	end
-	--XPerl_Target_DebuffUpdate(self)
-
-	--[[if conf.showFD then
-		local _, class = UnitClass(self.partyid)
-		if class == "HUNTER" then
-			local feigning = UnitBuff(self.partyid, feignDeath)
-			if feigning ~= self.feigning then
-				self.feigning = feigning
-				XPerl_Target_UpdateHealth(self)
-			end
-		end
-	end--]]
 end
 
 -- UNIT_FACTION
@@ -1875,12 +1724,6 @@ function XPerl_Target_Set_Bits(self)
 	end
 
 	XPerl_StatsFrameSetup(self)
-
-	--[[if (not self.conf.ownDamageOnly and self.conf.hitIndicator and self.conf.portrait) then
-		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	else
-		self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	end--]]
 
 	self.buffFrame:ClearAllPoints()
 	if (self.conf.buffs.above) then

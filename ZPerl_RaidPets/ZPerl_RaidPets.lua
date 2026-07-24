@@ -47,8 +47,6 @@ for k, v in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 	end
 end
 
---local taintFrames = {}
-
 -- XPerl_RaidPets_OnEvent
 local function XPerl_RaidPets_OnEvent(self, event, unit, ...)
 	local func = XPerl_RaidPets_Events[event]
@@ -344,10 +342,6 @@ function XPerl_RaidPets_UpdateDisplay(self)
 	XPerl_RaidPets_RaidTargetUpdate(self)
 
 	XPerl_Highlight:SetHighlight(self)
-	--[[local unit = SecureButton_GetUnit(self)
-	if (unit) then
-		XPerl_Highlight:SetHighlight(self, UnitGUID(unit))
-	end]]
 end
 
 -- UNIT_HEAL_PREDICTION
@@ -381,13 +375,6 @@ function XPerl_RaidPets_Events:VARIABLES_LOADED()
 	XPerl_RaidPets_Events.VARIABLES_LOADED = nil
 end
 
---[[local TitlesUpdateFrame = CreateFrame("Frame")
-TitlesUpdateFrame:SetScript("OnUpdate", function(self)
-	XPerl_RaidPets_Titles()
-	self:Hide()
-end)
-TitlesUpdateFrame:Hide()]]
-
 function XPerl_RaidPets_Events:PET_BATTLE_OPENING_START()
 	if (self) then
 		XPerl_RaidPets_HideShow()
@@ -404,39 +391,7 @@ end
 function XPerl_RaidPets_Events:PLAYER_ENTERING_WORLD()
 	XPerl_RaidPet_UpdateGUIDs()
 	XPerl_RaidPets_UpdateDisplayAll()
-	--TitlesUpdateFrame:Show()
 end
-
---[[local function taintable(self)
-	if not self or type(self) == "number" then
-		return
-	end
-	self:RegisterForClicks("AnyUp")
-	self:SetAttribute("useparent-unit", true)
-	self:SetAttribute("*type1", "target")
-	self:SetAttribute("type2", "togglemenu")
-
-	XPerl_RegisterClickCastFrame(self)
-end]]
-
--- PLAYER_REGEN_ENABLED
---[[function XPerl_RaidPets_Events:PLAYER_REGEN_ENABLED()
-	-- Update all pet frame that would have tained
-	local tainted
-	if #taintFrames > 0 then
-		tainted = true
-	end
-	for i = 1, #taintFrames do
-		taintable(taintFrames[i])
-		taintFrames[i] = nil
-	end
-	if tainted then
-		XPerl_RaidPets_ChangeAttributes()
-		if (XPerl_RaidPets_OptionActions) then
-			XPerl_RaidPets_OptionActions()
-		end
-	end
-end]]
 
 -- RAID_TARGET_UPDATE
 function XPerl_RaidPets_Events:RAID_TARGET_UPDATE()
@@ -557,13 +512,6 @@ function XPerl_RaidPet_Single_OnLoad(self)
 	self:SetAttribute("type2", "togglemenu")
 
 	XPerl_RaidPets_SetBits1(self)
-
-	--[[if (InCombatLockdown()) then
-		tinsert(taintFrames, self)
-		return
-	else
-		taintable(self)
-	end]]
 end
 
 -- initialConfigFunction

@@ -198,14 +198,6 @@ function XPerl_Player_Pet_OnLoad(self)
 	-- Set here to reduce amount of function calls made
 	self:SetScript("OnEvent", XPerl_Player_Pet_OnEvent)
 	self:SetScript("OnUpdate", XPerl_Player_Pet_OnUpdate)
-	--[[if (FOM_FeedButton) then
-		self:SetScript("OnShow", function(self)
-			XPerl_Unit_UpdatePortrait(self)
-			XPerl_ProtectedCall(Set_FOM_FeedButton)
-		end)
-	else
-		self:SetScript("OnShow", XPerl_Unit_UpdatePortrait)
-	end]]
 	self:SetScript("OnShow", XPerl_Unit_UpdatePortrait)
 
 	if XPerl_ArcaneBar_RegisterFrame then
@@ -513,22 +505,6 @@ function XPerl_Player_Pet_Events:UNIT_PET()
 	end
 end
 
---[[function XPerl_Player_Pet_Events:PET_BATTLE_OPENING_START()
-	if (UnitExists("pet")) then
-		UnregisterUnitWatch(self)
-		self:Hide()
-	end
-end
-
-function XPerl_Player_Pet_Events:PET_BATTLE_CLOSE()
-	if (UnitExists("pet")) then
-		if not InCombatLockdown() then
-			RegisterUnitWatch(self)
-		end
-		XPerl_ProtectedCall(Show, self)
-	end
-end]]
-
 XPerl_Player_Pet_Events.PET_STABLE_SHOW = XPerl_Player_Pet_Events.UNIT_PET
 
 -- UNIT_NAME_UPDATE
@@ -640,9 +616,6 @@ function XPerl_Player_Pet_Events:UNIT_ENTERED_VEHICLE(showVehicle)
 		if XPerl_ArcaneBar_SetUnit then
 			XPerl_ArcaneBar_SetUnit(self.nameFrame, "player")
 		end
-		--[[if (not InCombatLockdown()) then
-			self:SetAttribute("unit", "player")
-		end]]
 		XPerl_Player_Pet_UpdateDisplay(self)
 	end
 end
@@ -655,9 +628,6 @@ function XPerl_Player_Pet_Events:UNIT_EXITING_VEHICLE()
 		if (XPerl_ArcaneBar_SetUnit) then
 			XPerl_ArcaneBar_SetUnit(self.nameFrame, "pet")
 		end
-		--[[if (not InCombatLockdown()) then
-			self:SetAttribute("unit", "pet")
-		end]]
 		XPerl_Player_Pet_UpdateDisplay(self)
 	end
 end

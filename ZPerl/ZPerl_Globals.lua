@@ -666,8 +666,6 @@ function XPerl_LoadOptions()
 
 		if (not ok) then
 			XPerl_Notice("Failed to load Z-Perl Options ("..tostring(reason)..")")
-		--[[else
-			collectgarbage()]]			-- Reclaims about 1.4Mb from loading options
 		end
 	end
 
