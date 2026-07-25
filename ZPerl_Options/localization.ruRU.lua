@@ -843,8 +843,6 @@ if GetLocale() == "ruRU" then
 	XPERL_CONF_COLOUR_RAGE_DESC				= "Сманить цвет всех полос ярости"
 	XPERL_CONF_COLOUR_FOCUS					= "Фокус"
 	XPERL_CONF_COLOUR_FOCUS_DESC			= "Сманить цвет полосы фокуса охотничьего питомца"
-	XPERL_CONF_COLOUR_RUNIC					= RUNIC_POWER	-- "Runic Energy"	Generic WoW localization
-	XPERL_CONF_COLOUR_RUNIC_DESC			= "Сманить цвет полос сил рун Рыцаря Смерти"
 	XPERL_CONF_ALPHA						= "Прозрачность"
 	XPERL_CONF_ALPHA_DESC					= "Меняет прозрачность"
 	XPERL_CONF_COLOUR_RESET_MAIN			= RESET		-- "Сброс"	Generic WoW localization

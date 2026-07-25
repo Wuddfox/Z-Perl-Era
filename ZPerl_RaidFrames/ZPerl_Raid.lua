@@ -2086,7 +2086,6 @@ local normalRezzers = {
 	PRIEST = true,
 	SHAMAN = true,
 	PALADIN = true,
-	MONK = true
 }
 
 local function SortCooldown(a, b)
@@ -2121,7 +2120,7 @@ local function GetCombatRezzerList()
 
 				local good
 				if (not UnitAffectingCombat(raidid)) then
-					if (fileName == "PRIEST" or fileName == "SHAMAN" or fileName == "PALADIN" or fileName == "MONK") then
+					if (fileName == "PRIEST" or fileName == "SHAMAN" or fileName == "PALADIN") then
 						tinsert(ret, {["name"] = name, class = fileName, cd = 0})
 					end
 				else

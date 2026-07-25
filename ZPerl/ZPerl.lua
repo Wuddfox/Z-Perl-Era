@@ -1401,13 +1401,6 @@ local ManaColours = {
 	[Enum.PowerType.Rage] = "rage",
 	[Enum.PowerType.Focus] = "focus",
 	[Enum.PowerType.Energy] = "energy",
-	[Enum.PowerType.Runes] = "runes",
-	[Enum.PowerType.RunicPower] = "runic_power",
-	[Enum.PowerType.Insanity] = "insanity",
-	[Enum.PowerType.LunarPower] = "lunar",
-	[Enum.PowerType.Maelstrom] = "maelstrom",
-	[Enum.PowerType.Fury] = "fury",
-	[Enum.PowerType.Pain] = "pain",
 	[Enum.PowerType.Alternate] = "energy", -- used by some bosses, show it as energy bar
 }
 
@@ -1666,8 +1659,6 @@ local MagicCureTalents = {
 	["DRUID"] = 4, -- Resto
 	["PALADIN"] = 1, -- Holy
 	["SHAMAN"] = 3, -- Resto
-	["MONK"] = 2, -- Mistweaver
-	["EVOKER"] = 2 -- Preservation
 }
 
 local function CanClassCureMagic(class)
@@ -1715,18 +1706,6 @@ function ZPerl_DebufHighlightInit()
 			end
 			return Curses.Magic or show
 		end
-	elseif (playerClass == "MONK") then
-		getShow = function(Curses)
-			local show
-			if (not conf.highlightDebuffs.class) then
-				show = Curses.Magic or Curses.Curse or Curses.Poison or Curses.Disease
-			end
-			local magic
-			if (CanClassCureMagic(playerClass)) then
-				magic = Curses.Magic
-			end
-			return Curses.Poison or Curses.Disease or magic or show
-		end
 	elseif (playerClass == "PALADIN") then
 		getShow = function(Curses)
 			local show
@@ -1758,18 +1737,6 @@ function ZPerl_DebufHighlightInit()
 				show = Curses.Magic or Curses.Curse or Curses.Poison or Curses.Disease
 			end
 			return Curses.Poison or show
-		end
-	elseif (playerClass == "EVOKER") then
-		getShow = function(Curses)
-			local show
-			if (not conf.highlightDebuffs.class) then
-				show = Curses.Magic or Curses.Curse or Curses.Poison or Curses.Disease
-			end
-			local magic
-			if (CanClassCureMagic(playerClass)) then
-				magic = Curses.Magic
-			end
-			return Curses.Curse or Curses.Poison or Curses.Disease or magic or show
 		end
 	else
 		getShow = function(Curses)

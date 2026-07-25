@@ -840,8 +840,6 @@ if GetLocale() == "deDE" then
 	XPERL_CONF_COLOUR_RAGE_DESC				= "\195\132ndere die Farbe aller Wutleisten"
 	XPERL_CONF_COLOUR_FOCUS					= FOCUS
 	XPERL_CONF_COLOUR_FOCUS_DESC			= "\195\132ndere die Farbe der Fokusleiste des J\195\164gerbegleiters"
-	XPERL_CONF_COLOUR_RUNIC					= RUNIC_POWER
-	XPERL_CONF_COLOUR_RUNIC_DESC			= "\195\132ndere die Farbe der Runenleisten des Todesritters"
 	XPERL_CONF_ALPHA						= OPACITY
 	XPERL_CONF_ALPHA_DESC					= "\195\132ndere die Transparenz"
 	XPERL_CONF_COLOUR_RESET_MAIN			= RESET

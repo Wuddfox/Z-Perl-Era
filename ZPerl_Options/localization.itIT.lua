@@ -850,8 +850,6 @@ if GetLocale() == "itIT" then
 	XPERL_CONF_COLOUR_RAGE_DESC = "Cambia il colore delle barre della rabbia"
 	XPERL_CONF_COLOUR_FOCUS = FOCUS
 	XPERL_CONF_COLOUR_FOCUS_DESC ="Cambia il colore delle barre di focus"
-	XPERL_CONF_COLOUR_RUNIC = RUNIC_POWER
-	XPERL_CONF_COLOUR_RUNIC_DESC ="Cambia il colore delle barre di potenza runica"
 	XPERL_CONF_ALPHA = "Transparenza"
 	XPERL_CONF_ALPHA_DESC ="Cambia la transparenza"
 	XPERL_CONF_COLOUR_RESET_MAIN = RESET

@@ -632,7 +632,9 @@ function XPerl_Player_DruidBarUpdate(self)
 	end
 
 	local h = 40 + ((((druidBar and druidBar:IsShown()) and 1 or 0) + (pconf.repBar and 1 or 0) + (pconf.xpBar and 1 or 0)) * 10)
-	self.statsFrame:SetHeight(h)
+	if not InCombatLockdown() then
+		self.statsFrame:SetHeight(h)
+	end
 
 	XPerl_StatsFrameSetup(self, {druidBar, self.statsFrame.xpBar, self.statsFrame.repBar})
 end
@@ -1638,12 +1640,6 @@ end
 -- PLAYER_TALENT_UPDATE
 function XPerl_Player_Events:PLAYER_TALENT_UPDATE()
 	XPerl_Player_UpdateMana(self)
-
-	if (playerClass == "MONK") then
-		if (XPerl_Player_Buffs_Position) then
-			XPerl_Player_Buffs_Position(self)
-		end
-	end
 end
 
 -- UPDATE_SHAPESHIFT_FORM
@@ -1761,11 +1757,9 @@ function XPerl_Player_Events:UNIT_EXITING_VEHICLE()
 			if self.runes.child2 then
 				local _, playerClass = UnitClass(self.partyid)
 				if playerClass == self.runes.child2.requiredClass then
-					if playerClass == "MONK" and GetSpecialization and GetSpecialization() == self.runes.child2.requiredSpec then
-						self.runes.child2:Show()
-					elseif playerClass == "DRUID" then
+					if playerClass == "DRUID" then
 						EclipseBarFrame:UpdateShown()
-					elseif playerClass == "DEATHKNIGHT" or playerClass == "PALADIN" or playerClass == "WARLOCK" then
+					elseif playerClass == "PALADIN" or playerClass == "WARLOCK" then
 						self.runes.child2:Show()
 					end
 				end

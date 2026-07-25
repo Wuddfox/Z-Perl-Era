@@ -1636,7 +1636,6 @@ function XPerl_Options_ImportOldConfig(old)
 				energy		= old.ColourEnergy		or {r = 1, g = 1, b = 0},
 				rage		= old.ColourRage		or {r = 1, g = 0, b = 0},
 				focus		= old.ColourFocus		or {r = 1, g = 0.5, b = 0.25},
-				runic_power	= {r = PowerBarColor and PowerBarColor["RUNIC_POWER"].r or 1, g = PowerBarColor and PowerBarColor["RUNIC_POWER"].g or 1, b = PowerBarColor and PowerBarColor["RUNIC_POWER"].b or 1},
 			},
 			reaction = {
 				enemy		= old.ColourReactionEnemy	or {r = 1, g = 0, b = 0},
@@ -2070,10 +2069,6 @@ function XPerl_Options_ImportOldConfig(old)
 				{enable = Convert(old.RaidClass7Enable), name = old.RaidClass7 or "DRUID"},
 				{enable = Convert(old.RaidClass8Enable), name = old.RaidClass8 or "SHAMAN"},
 				{enable = Convert(old.RaidClass9Enable), name = old.RaidClass9 or "PALADIN"},
-				{enable = true, name = "DEATHKNIGHT"},
-				{enable = true, name = "MONK"},
-				{enable = true, name = "DEMONHUNTER"},
-				{enable = true, name = "EVOKER"},
 			},
 			titles			= Convert(old.ShowRaidTitles),
 			percent			= Convert(old.ShowRaidPercents),
@@ -2537,10 +2532,6 @@ local function XPerl_Raid_ConfigDefault(default)
 			{enable = 1, name = "DRUID"},
 			{enable = 1, name = "SHAMAN"},
 			{enable = 1, name = "PALADIN"},
-			{enable = 1, name = "DEATHKNIGHT"},
-			{enable = 1, name = "MONK"},
-			{enable = 1, name = "DEMONHUNTER"},
-			{enable = 1, name = "EVOKER"},
 		},
 		role			= nil,
 		titles			= 1,
@@ -2632,12 +2623,6 @@ function XPerl_DefaultBarColours()
 		energy		= {r = 1, g = 1, b = 0},
 		rage		= {r = 1, g = 0, b = 0},
 		focus		= {r = 1, g = 0.5, b = 0.25},
-		runic_power	= {r = 0, g = 0.82, b = 1},
-		insanity	= {r = 0.4, g = 0, b = 0.8},
-		lunar		= {r = 0.3, g = 0.52, b = 0.9},
-		maelstrom	= {r = 0, g = 0.5, b = 1},
-		fury		= {r = 0.788, g = 0.259, b = 0.992},
-		pain		= {r = 1, g = 0.611, b = 0},
 	}
 end
 
@@ -3221,54 +3206,6 @@ if (XPerl_UpgradeSettings) then
 
 			if (not old.colour.bar.healprediction or old.colour.bar.healprediction[1]) then
 				old.colour.bar.healprediction = {r = 0, g = 1, b = 1, a = 1}
-			end
-
-			if (not old.colour.bar.runic_power or old.colour.bar.runic_power[1]) then
-				if (PowerBarColor) then
-					old.colour.bar.runic_power = {r = PowerBarColor["RUNIC_POWER"].r, g = PowerBarColor["RUNIC_POWER"].g, b = PowerBarColor["RUNIC_POWER"].b}
-				else
-					old.colour.bar.runic_power = {r = 1, g = 0.25, b = 1}
-				end
-			end
-
-			if (not old.colour.bar.insanity or old.colour.bar.insanity[1]) then
-				if (PowerBarColor) then
-					old.colour.bar.insanity = {r = PowerBarColor["INSANITY"].r, g = PowerBarColor["INSANITY"].g, b = PowerBarColor["INSANITY"].b}
-				else
-					old.colour.bar.insanity = {r = 0.4, g = 0, b = 0.8}
-				end
-			end
-
-			if (not old.colour.bar.lunar or old.colour.bar.lunar[1]) then
-				if (PowerBarColor) then
-					old.colour.bar.lunar = {r = PowerBarColor["LUNAR_POWER"].r, g = PowerBarColor["LUNAR_POWER"].g, b = PowerBarColor["LUNAR_POWER"].b}
-				else
-					old.colour.bar.lunar = {r = 0.3, g = 0.52, b = 0.9}
-				end
-			end
-
-			if (not old.colour.bar.maelstrom or old.colour.bar.maelstrom[1]) then
-				if (PowerBarColor) then
-					old.colour.bar.maelstrom = {r = PowerBarColor["MAELSTROM"].r, g = PowerBarColor["MAELSTROM"].g, b = PowerBarColor["MAELSTROM"].b}
-				else
-					old.colour.bar.maelstrom = {r = 0, g = 0.5, b = 1}
-				end
-			end
-
-			if (not old.colour.bar.fury or old.colour.bar.fury[1]) then
-				if (PowerBarColor) then
-					old.colour.bar.fury = {r = PowerBarColor["FURY"].r, g = PowerBarColor["FURY"].g, b = PowerBarColor["FURY"].b}
-				else
-					old.colour.bar.fury = {r = 0.788, g = 0.259, b = 0.992}
-				end
-			end
-
-			if (not old.colour.bar.pain or old.colour.bar.pain[1]) then
-				if (PowerBarColor) then
-					old.colour.bar.pain = {r = PowerBarColor["PAIN"].r, g = PowerBarColor["PAIN"].g, b = PowerBarColor["PAIN"].b}
-				else
-					old.colour.bar.pain = {r = 1, g = 0.611, b = 0}
-				end
 			end
 
 			ValidateClassNames(old.raid)
