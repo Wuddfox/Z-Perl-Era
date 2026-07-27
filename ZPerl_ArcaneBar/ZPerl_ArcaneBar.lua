@@ -97,6 +97,15 @@ local function overrideToggle(value)
 						end
 					end
 				end
+				-- Re-registering events used to be enough for Blizzard's own OnEvent
+				-- handler to re-show these on the next cast, but that's no longer
+				-- reliable -- explicitly un-hide them too rather than just hoping.
+				if PlayerCastingBarFrame and PlayerCastingBarFrame.Show and UnitCastingInfo and UnitCastingInfo("player") then
+					PlayerCastingBarFrame:Show()
+				end
+				if CastingBarFrame and CastingBarFrame.Show and UnitCastingInfo and UnitCastingInfo("player") then
+					CastingBarFrame:Show()
+				end
 				pconf.bar.Overrided = nil
 			end
 		else
