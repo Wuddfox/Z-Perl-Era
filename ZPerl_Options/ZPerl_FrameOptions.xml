@@ -9110,7 +9110,6 @@
 									XPerl_Options_EnableSibling(self, "All", "DebuffHighlight")
 									XPerl_Options_EnableSibling(self, "Friend", "DebuffHighlight")
 									XPerl_Options_EnableSibling(self, "Enemy", "DebuffHighlight")
-									XPerl_Options_EnableSibling(self, "Hots")
 									--XPerl_Options_EnableSibling(self, "FocusTarget_TargetsTarget")
 								end
 							</OnLoad>
@@ -9752,7 +9751,6 @@
 											XPerl_Options_EnableSibling(self, "Healer_DeficitOnly", "Healer_Healer")
 											XPerl_Options_EnableSibling(self, "Healer_DeficitMax", "Healer_Healer")
 											XPerl_Options_EnableSibling(self, "Healer_CurMaxDeficit", "Healer_Healer")
-											XPerl_Options_EnableSibling(self, "Hots")
 										end
 										self.flashFrame = XPerl_FocusTarget
 										self.configBase = "XPerlDB.focustarget"
@@ -10665,7 +10663,6 @@
 									XPerl_Options_EnableSibling(self, "MaxRows", "BuffWrap")
 									XPerl_Options_EnableSibling(self, "BigBuffs")
 									XPerl_Options_EnableSibling(self, "BigPet", "BigBuffs")
-									XPerl_Options_EnableSibling(self, "Hots")
 								end
 								self.configBase = "XPerlDB.party"
 								self.configIndex = "enable"
@@ -11845,7 +11842,6 @@
 									XPerl_Options_EnableSibling(self, "PrecisionPercent", "HealthText")
 									XPerl_Options_EnableSibling(self, "HealPrediction")
 									XPerl_Options_EnableSibling(self, "Absorbs")
-									XPerl_Options_EnableSibling(self, "Hots")
 									XPerl_Options_EnableSibling(self, "Mana")
 									XPerl_Options_EnableSibling(self, "ManaPercent", "Mana")
 									XPerl_Options_EnableSibling(self, "PrecisionManaPercent", "Mana")

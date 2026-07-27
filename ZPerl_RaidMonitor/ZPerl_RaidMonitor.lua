@@ -113,7 +113,7 @@ local function CastBar_OnUpdate(self)
 		self.castBar.spark:SetPoint("CENTER", self.castBar, "LEFT", sparkPosition, 1)
 
 	elseif (self.fadeOut) then
-		local alpha = self.castBar:GetAlpha() - CASTING_BAR_ALPHA_STEP
+		local alpha = self.castBar:GetAlpha() - (CASTING_BAR_ALPHA_STEP or 0.02)
 		if (alpha > 0) then
 			self.castBar:SetAlpha(alpha)
 			self.bar.name:SetAlpha(1 - alpha)
